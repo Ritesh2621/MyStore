@@ -9,6 +9,7 @@ import cookieParser from 'cookie-parser';
 const app = express();
 
 import { ProductRouter } from "./Routes/productRoute.js";
+import { UserRouter } from "./Routes/userRoute.js";
 
 
 
@@ -17,6 +18,7 @@ app.use(cors());
 app.use(cookieParser());
 
 
+app.use('/auth',UserRouter);
 app.use('/product',ProductRouter);
 
 
