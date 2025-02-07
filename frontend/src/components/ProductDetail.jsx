@@ -18,10 +18,11 @@ const ProductDetail = () => {
         const response = await axios.get(
           `http://localhost:4000/product/${id}`
         );
+        console.log(response.data); // Log to check the structure
         setProduct(response.data);
         setSelectedImage(response.data.images[0]);
         setLoading(false);
-
+  
         const cart = JSON.parse(localStorage.getItem("cart")) || [];
         const isProductInCart = cart.some((item) => item.id === response.data.id);
         setIsInCart(isProductInCart);
@@ -30,9 +31,10 @@ const ProductDetail = () => {
         setLoading(false);
       }
     };
-
+  
     fetchProductDetail();
   }, [id]);
+  
 
   const addToCart = () => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -126,15 +128,13 @@ const ProductDetail = () => {
         <div className="flex flex-col">
           <h1 className="text-3xl font-bold text-gray-900">{product.title}</h1>
           <p className="text-xl font-semibold text-green-600 mt-2">
-            ${product.price}{" "}
+            Rs {product.price}{" "}
             <span className="line-through text-gray-500">
-              ${Math.round(product.price / (1 - product.discountPercentage / 100))}
+              Rs {Math.round(product.price / (1 - product.discountPercentage / 100))}
             </span>
           </p>
           <p className="text-sm text-gray-600 mt-1">{product.discountPercentage}% off</p>
-          <p className="text-sm text-yellow-600 mt-4">
-            Availability: {product.availabilityStatus}
-          </p>
+        
   
           <div className="mt-4">
             <h2 className="text-lg font-semibold text-gray-800">Product Description</h2>
@@ -167,42 +167,54 @@ const ProductDetail = () => {
                 <span className="font-semibold">Category:</span> {product.category.charAt(0).toUpperCase() + product.category.slice(1)}
               </p>
               <p className="text-lg font-bold text-green-600 mb-3">
-                <span className="font-semibold">Price:</span> ${product.price}
+                <span className="font-semibold">Price:</span> Rs {product.price}
               </p>
               <p className="text-lg text-gray-600 mb-3">
                 <span className="font-semibold">Discount:</span> {product.discountPercentage}%
               </p>
               <p className="text-lg text-gray-600 mb-3">
-                <span className="font-semibold">Stock:</span> {product.stock > 0 ? `${product.stock} items` : "Out of stock"}
+                <span className="font-semibold">Stock:</span> {product.stock > 0 ? `${product.stock} items` : "Available"}
               </p>
               <p className="text-lg text-gray-600 mb-3">
                 <span className="font-semibold">Brand:</span> {product.brand ? product.brand : "Data not available"}
               </p>
             </div>
   
-      
+            <div>
+              <p className="text-lg text-gray-600 mb-3">
+                <span className="font-semibold">Seller Name:</span> {product.sellerName}
+              </p>
+              <p className="text-lg text-gray-600 mb-3">
+                <span className="font-semibold">Warranty:</span> {product.warrantyInformation}
+              </p>
+              <p className="text-lg text-gray-600 mb-3">
+                <span className="font-semibold">Shipping:</span> {product.shippingInformation}
+              </p>
+            
+            </div>
           </div>
         </div>
       </div>
   
-      {/* <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-2">Reviews</h2>
-        {product.reviews.length > 0 ? (
-          <Slider {...settings}>
-            {product.reviews.map((review, index) => (
-              <div key={index} className="p-4 border rounded-lg mb-3">
-                <p className="text-lg text-gray-600">
-                  <span className="font-semibold">{review.reviewerName}</span> ({review.rating} ★)
-                </p>
-                <p className="text-gray-700">{review.comment}</p>
-                <p className="text-sm text-gray-500">{new Date(review.date).toLocaleDateString()}</p>
-              </div>
-            ))}
-          </Slider>
-        ) : (
-          <p className="text-gray-600">No reviews available.</p>
-        )}
-      </div> */}
+      <div className="mb-6">
+  <h2 className="text-2xl font-bold mb-2">Reviews</h2>
+  {product.reviews && product.reviews.length > 0 ? (
+    <Slider {...settings}>
+      {product.reviews.map((review, index) => (
+        <div key={index} className="p-4 border rounded-lg mb-3">
+          <p className="text-lg text-gray-600">
+            <span className="font-semibold">{review.user}</span> ({review.rating['$numberInt']} ★) {/* Handle rating object */}
+          </p>
+          <p className="text-gray-700">{review.comment}</p>
+        </div>
+      ))}
+    </Slider>
+  ) : (
+    <p className="text-gray-600">No reviews available.</p>
+  )}
+</div>
+
+
     </div>
   </div>
   

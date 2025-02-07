@@ -15,7 +15,7 @@ router.use(cookieParser());
 
 // Register Route
 router.post("/register", async (req, res) => {
-  const { name, email, phone, password } = req.body;
+  const { name, email, phone, password,role } = req.body;
   const user = await UserModel.findOne({ email });
 
   try {
@@ -30,6 +30,7 @@ router.post("/register", async (req, res) => {
       email,
       phone,
       password: hashedPassword,
+      role
     });
 
     await newUser.save();

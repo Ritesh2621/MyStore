@@ -37,7 +37,28 @@ const productSchema = new mongoose.Schema({
       type: String,
       required: true,
     }
-  ]
+  ],
+  reviews:[
+    {
+      type:String
+    }
+  ],
+  sellername:{
+    type:String,
+    required:true
+  },
+  quantity:{
+    type:String,
+    required:true
+  },
+  warrantyInformation: {
+    type:String,
+    required:true
+  },
+  shippingInformation:{
+      type:String,
+      required:true
+  },
 });
 
 export const ProductModel = mongoose.model("Product", productSchema);

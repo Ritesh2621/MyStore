@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FaSearch } from 'react-icons/fa';
+import { MdCurrencyRupee } from "react-icons/md";
 
 const ProductPage = ({ activeSection, setActiveSection }) => {
   const [products, setProducts] = useState([]);  // Initialize products as an empty array
@@ -115,7 +116,7 @@ const ProductPage = ({ activeSection, setActiveSection }) => {
                 <h2 className="font-semibold text-lg">{product.title}</h2>
                 <p className="text-gray-600">Category: {product.category.charAt(0).toUpperCase() + product.category.slice(1)}</p>
                 <div className="flex items-center justify-between">
-                  <p className="text-gray-900 font-bold mt-2">${product.price}</p>
+                  <p className="text-gray-900 font-bold mt-2 flex items-center"><MdCurrencyRupee size={20}/>{product.price}</p>
                   <p className="bg-green-600 text-white mt-2 p-1 rounded-lg">{product.rating}⭐</p>
                 </div>
               </div>

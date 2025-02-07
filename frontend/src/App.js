@@ -9,6 +9,8 @@ import CartPage from "./components/CartPage";
 import CheckoutPage from "./components/CheckoutPage";
 import MyOrdersPage from "./components/MyOrdersPage";
 import ScrollToTop from "./components/ScrollToTop";
+import Login from "./components/Login";
+import Register from "./components/Register";
 
 function App() {
   const [activeSection, setActiveSection] = React.useState("all categories");
@@ -23,6 +25,8 @@ function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/myorders" element={<MyOrdersPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Register />} />
       </Routes>
     
       </ScrollToTop>

@@ -25,7 +25,7 @@ router.get("/:id",async(req,res)=>{
 
 router.post('/product', async (req, res) => {
     try {
-        const { title, description, category,subcategory, price, discountPercentage, rating, brand, images } = req.body;
+        const { title, description, category,subcategory, price, discountPercentage, rating, brand, images,sellername,quantity,warrantyInformation,shippingInformation } = req.body;
 
         // Create a new instance of ProductModel with the updated schema
         const newProduct = new ProductModel({
@@ -37,7 +37,12 @@ router.post('/product', async (req, res) => {
             discountPercentage,
             rating,
             brand,
-            images
+            images,
+            reviews,
+            sellername,
+            quantity,
+              warrantyInformation,
+              shippingInformation,
         });
 
         // Save the instance to the database
