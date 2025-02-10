@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Slider from "react-slick";
+import { CiCirclePlus } from "react-icons/ci";
+import { CiCircleMinus } from "react-icons/ci";
 import { IoArrowBackCircleSharp } from "react-icons/io5";
 
 const ProductDetail = () => {
@@ -9,7 +11,7 @@ const ProductDetail = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [isInCart, setIsInCart] = useState(false);
+ const [cartItems, setCartItems] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,28 +25,48 @@ const ProductDetail = () => {
         setSelectedImage(response.data.images[0]);
         setLoading(false);
   
-        const cart = JSON.parse(localStorage.getItem("cart")) || [];
-        const isProductInCart = cart.some((item) => item.id === response.data.id);
-        setIsInCart(isProductInCart);
+      
       } catch (error) {
         console.error("Error fetching product detail:", error);
         setLoading(false);
       }
     };
   
+
+    const storedCartItems = JSON.parse(localStorage.getItem('cartItems')) || {};
+    setCartItems(storedCartItems);
     fetchProductDetail();
   }, [id]);
   
 
-  const addToCart = () => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const existingProductIndex = cart.findIndex((item) => item.id === product.id);
-    if (existingProductIndex === -1) {
-      cart.push({ ...product, quantity: 1 });
-      localStorage.setItem("cart", JSON.stringify(cart));
-      setIsInCart(true);
+  const addToCart = (itemId) => {
+    const updatedCart = { ...cartItems };
+
+    if (!updatedCart[itemId]) {
+      updatedCart[itemId] = 1;
+    } else {
+      updatedCart[itemId] += 1;
     }
+
+    // Save the updated cart to localStorage
+    localStorage.setItem('cartItems', JSON.stringify(updatedCart));
+    setCartItems(updatedCart);
   };
+
+  const removeFromCart = (itemId) => {
+    const updatedCart = { ...cartItems };
+
+    if (updatedCart[itemId] > 1) {
+      updatedCart[itemId] -= 1;
+    } else {
+      delete updatedCart[itemId];
+    }
+
+    // Save the updated cart to localStorage
+    localStorage.setItem('cartItems', JSON.stringify(updatedCart));
+    setCartItems(updatedCart);
+  };
+
 
   const checkout = () => {
     const singleItemCheckout = [
@@ -92,6 +114,8 @@ const ProductDetail = () => {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
+
+  const cartCount = cartItems[id] || 0;
 
   return (
     <div className="bg-gray-100 py-8">
@@ -142,17 +166,35 @@ const ProductDetail = () => {
           </div>
   
           <div className="flex space-x-4 my-4">
-            <button
-              onClick={addToCart}
-              className={`${
-                isInCart
-                  ? "bg-green-500 text-white cursor-not-allowed"
-                  : "bg-yellow-400 hover:bg-yellow-500 text-black"
-              } px-6 py-2 rounded-lg font-semibold shadow-md`}
-              disabled={isInCart}
-            >
-              {isInCart ? "Added to Cart" : "Add to Cart"}
-            </button>
+           {!cartCount ? (
+                          <button
+                            className="w-full sm:w-[50%] px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              addToCart(id);
+                            }}
+                          >
+                            Add to Cart
+                          </button>
+                        ) : (
+                          <div className="w-full sm:w-[50%] p-2 bg-gray-300 rounded-xl flex justify-between items-center">
+                            <CiCircleMinus
+                              onClick={(e) => {
+                                e.preventDefault();
+                                removeFromCart(id);
+                              }}
+                              className="cursor-pointer h-6 w-6"
+                            />
+                            <span className="px-4 text-center text-lg font-medium">{cartCount}</span>
+                            <CiCirclePlus
+                              onClick={(e) => {
+                                e.preventDefault();
+                                addToCart(id);
+                              }}
+                              className="cursor-pointer h-6 w-6"
+                            />
+                          </div>
+                        )}
             <button
               onClick={checkout}
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold shadow-md"

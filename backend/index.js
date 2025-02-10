@@ -14,7 +14,10 @@ import { UserRouter } from "./Routes/userRoute.js";
 
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3000", // Frontend URL
+  credentials: true, // Allow cookies (access token) to be sent with the request
+}));
 app.use(cookieParser());
 
 

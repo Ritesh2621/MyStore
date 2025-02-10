@@ -1,12 +1,79 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+
+// The API endpoint for product details (replace with your actual API endpoint)
+const API_URL = "http://localhost:4000/product/";
 
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Check if the ID is valid
+  const isValidObjectId = (id) => /^[0-9a-fA-F]{24}$/.test(id);
 
   useEffect(() => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    setCartItems(cart);
+    const cartData = JSON.parse(localStorage.getItem("cartItems"));
+
+    const cart = Array.isArray(cartData)
+      ? cartData
+      : cartData
+      ? Object.keys(cartData).map((id) => ({
+          id,
+          quantity: cartData[id],
+        }))
+      : [];
+
+    // Log the cart before fetching product details
+    console.log("Cart Data:", cartData);
+    console.log("Formatted Cart:", cart);
+
+    // Fetch product details for each item in the cart
+    const fetchProductDetails = async () => {
+      try {
+        const updatedCart = await Promise.all(
+          cart.map(async (item) => {
+            // Log each item to ensure the ID is correct
+            console.log("Item before ID check:", item);
+
+            // Validate the ID before proceeding
+            if (!isValidObjectId(item.id)) {
+              // More detailed logging if the ID is invalid
+              console.error(`Invalid ID detected: ${item.id}`);
+              throw new Error(`Invalid product ID: ${item.id}`);
+            }
+
+            const response = await fetch(`${API_URL}${item.id}`);
+            if (!response.ok) {
+              const errorText = await response.text();
+              console.error(`Error fetching details for ID: ${item.id}`);
+              throw new Error(`Failed to fetch product details: ${errorText}`);
+            }
+            const product = await response.json();
+            return {
+              ...item,
+              title: product.title,
+              price: product.price,
+              images: product.images,
+              discountPercentage: product.discountPercentage,
+              description: product.description,
+            };
+          })
+        );
+        setCartItems(updatedCart);
+      } catch (err) {
+        console.error("Error fetching product details:", err);  // More detailed error logging
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    // Proceed with fetching product details after cart data is prepared
+    if (cart.length > 0) {
+      fetchProductDetails();
+    } else {
+      setLoading(false); // If cart is empty, stop loading
+    }
   }, []);
 
   const updateQuantity = (id, change) => {
@@ -16,99 +83,67 @@ const CartPage = () => {
         : item
     );
     setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    localStorage.setItem("cartItems", JSON.stringify(updatedCart));
   };
 
   const removeItem = (id) => {
     const updatedCart = cartItems.filter((item) => item.id !== id);
     setCartItems(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    localStorage.setItem("cartItems", JSON.stringify(updatedCart));
   };
 
   const calculateTotal = () => {
-    return cartItems
-      .reduce((total, item) => {
-        const discountedPrice =
-          item.price - (item.price * item.discountPercentage) / 100;
-        return total + discountedPrice * item.quantity;
-      }, 0)
-      .toFixed(2);
+    return cartItems.reduce((total, item) => {
+      const discountedPrice = item.price - (item.price * item.discountPercentage) / 100;
+      return total + discountedPrice * item.quantity;
+    }, 0);
   };
 
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
   return (
-    <div className="py-8 bg-gray-100 min-h-screen">
-      <div className="max-w-7xl mx-auto bg-white shadow-lg rounded-lg p-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Your Cart</h1>
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <h1 className="text-3xl font-bold mb-4">Your Cart</h1>
+
+      <div className="max-w-5xl mx-auto bg-white p-6 rounded-xl shadow-lg">
         {cartItems.length === 0 ? (
-          <p className="text-gray-600">Your cart is empty.</p>
+          <p>Your cart is empty.</p>
         ) : (
-          <div className="space-y-6">
-            {cartItems.map((item) => (
-              <div
-                key={item.id}
-                className="flex flex-col sm:flex-row justify-between items-center border-b py-4"
-              >
-                <div className="flex items-center mb-4 sm:mb-0">
-                  <img
-                    src={item.images && item.images[0]}
-                    alt={item.title}
-                    className="w-20 h-20 object-cover rounded-lg"
-                  />
-                  <div className="ml-4">
-                    <h2 className="text-xl font-semibold">{item.title}</h2>
-                    <div className="flex space-x-2 p-2">
-                      <p className="line-through text-gray-500">
-                        ${Math.round(
-                          item.price / (1 - item.discountPercentage / 100)
-                        )}
-                      </p>
-                      <p className="text-gray-600">${item.price}</p>
-                    </div>
-                    <p className="text-green-600 text-sm">
-                      {item.discountPercentage}% Off
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center border rounded">
-                    <button
-                      onClick={() => updateQuantity(item.id, -1)}
-                      className="px-2 text-gray-600 hover:text-gray-900"
-                    >
-                      -
-                    </button>
-                    <span className="w-8 text-center">{item.quantity}</span>
-                    <button
-                      onClick={() => updateQuantity(item.id, 1)}
-                      className="px-2 text-gray-600 hover:text-gray-900"
-                    >
-                      +
-                    </button>
-                  </div>
-                  <button
-                    onClick={() => removeItem(item.id)}
-                    className="text-red-600 hover:text-red-800"
-                  >
-                    Remove
-                  </button>
+          cartItems.map((item) => (
+            <div key={item.id} className="flex items-center justify-between mb-6">
+              <div className="flex items-center">
+                <img src={item.images[0]} alt={item.title} className="h-20 w-20 object-cover rounded-lg mr-4" />
+                <div>
+                  <h2 className="text-xl font-semibold">{item.title}</h2>
+                  <p>{item.description}</p>
+                  <p className="text-lg font-semibold text-green-600">
+                    ${item.price}{" "}
+                    <span className="text-sm text-gray-500">(-{item.discountPercentage}%)</span>
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
+
+              <div className="flex items-center gap-4">
+                <button onClick={() => updateQuantity(item.id, -1)} className="px-4 py-2 bg-gray-200 rounded-full">-</button>
+                <span>{item.quantity}</span>
+                <button onClick={() => updateQuantity(item.id, 1)} className="px-4 py-2 bg-gray-200 rounded-full">+</button>
+              </div>
+
+              <button onClick={() => removeItem(item.id)} className="px-4 py-2 bg-red-500 text-white rounded-lg">
+                Remove
+              </button>
+            </div>
+          ))
         )}
 
-        <div className="mt-6 text-right">
-          <h2 className="text-xl font-semibold">Total: ${calculateTotal()}</h2>
-        </div>
-        <div className="mt-6 text-right">
-          <Link
-            to="/checkout"
-            state={{ total: calculateTotal(), cartItems }}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold"
-          >
-            Proceed to Checkout
-          </Link>
-        </div>
+        {/* Total */}
+        {cartItems.length > 0 && (
+          <div className="mt-6 flex justify-between items-center">
+            <h2 className="text-xl font-semibold">Total: ${calculateTotal().toFixed(2)}</h2>
+            <button className="px-6 py-2 bg-blue-500 text-white rounded-lg">Proceed to Checkout</button>
+          </div>
+        )}
       </div>
     </div>
   );

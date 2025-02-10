@@ -121,4 +121,49 @@ router.post("/login-verify", async (req, res) => {
   }
 });
 
+
+router.get("/profile", async (req, res) => {
+  const token = req.cookies.access_token; // Retrieve the token from the cookie
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  try {
+    // Verify and decode the token to get user ID
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+if (!decoded) {
+  return res.status(401).json({ message: "Invalid or expired token" });
+}
+
+    const userId = decoded.id;
+
+    // Fetch the user profile by ID
+    const user = await UserModel.findById(userId).select(
+      "name email phone profilePicture addresses"
+    );
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Send response back with user profile data
+    const userProfile = {
+      ...user.toObject(),
+    };
+
+    res.status(200).json(userProfile);
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: "Token expired" });
+    }
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+
 export { router as UserRouter };

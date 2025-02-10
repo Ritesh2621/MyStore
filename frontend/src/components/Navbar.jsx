@@ -29,7 +29,6 @@ const Navbar = ({ setActiveSection, onSearch }) => {
   const userRole = getUserRole(token);
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const categories = ['All Categories', 'Clothes', 'Jewellery', 'Home Furnishing'];
   
   const dropdownRef = useRef(null);
