@@ -220,11 +220,7 @@ const ProductDetail = () => {
               </p>
             
             </div>
-          </div>
-        </div>
-      </div>
-  
-      <div className="mb-6">
+            <div className="mb-6">
   <h2 className="text-2xl font-bold mb-2">Reviews</h2>
   {product.reviews && product.reviews.length > 0 ? (
     <Slider {...settings}>
@@ -241,6 +237,11 @@ const ProductDetail = () => {
     <p className="text-gray-600">No reviews available.</p>
   )}
 </div>
+          </div>
+        </div>
+      </div>
+  
+ 
 
 
     </div>
