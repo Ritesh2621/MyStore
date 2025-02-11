@@ -177,22 +177,8 @@ const ProductDetail = () => {
                             Add to Cart
                           </button>
                         ) : (
-                          <div className="w-full sm:w-[50%] p-2 bg-gray-300 rounded-xl flex justify-between items-center">
-                            <CiCircleMinus
-                              onClick={(e) => {
-                                e.preventDefault();
-                                removeFromCart(id);
-                              }}
-                              className="cursor-pointer h-6 w-6"
-                            />
-                            <span className="px-4 text-center text-lg font-medium">{cartCount}</span>
-                            <CiCirclePlus
-                              onClick={(e) => {
-                                e.preventDefault();
-                                addToCart(id);
-                              }}
-                              className="cursor-pointer h-6 w-6"
-                            />
+                          <div className="w-full sm:w-[50%] px-6 py-2 text-center bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                         Added To Cart
                           </div>
                         )}
             <button

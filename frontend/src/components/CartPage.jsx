@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { CiCirclePlus, CiCircleMinus } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
+import Cart from "../assets/Cart.jpg"
 
 const CartPage = () => {
   const navigate = useNavigate();
@@ -9,16 +10,13 @@ const CartPage = () => {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    // Retrieve the cart data from localStorage
     const storedCartItems = JSON.parse(localStorage.getItem("cartItems")) || {};
     const updatedCartItems = {};
 
-    // Fetch product details for items that are in the cart but only have the ID (missing other product info)
     const fetchProductDetails = async () => {
       for (const id in storedCartItems) {
         const quantity = storedCartItems[id];
 
-        // If the stored data is not in the expected format (missing product info), fetch from API
         if (typeof quantity === "number") {
           try {
             const response = await axios.get(`http://localhost:4000/product/${id}`);
@@ -32,7 +30,7 @@ const CartPage = () => {
             console.error("Error fetching product details:", error);
           }
         } else {
-          updatedCartItems[id] = quantity; // Use the full product data if available
+          updatedCartItems[id] = quantity;
         }
       }
       setCartItems(updatedCartItems);
@@ -41,7 +39,6 @@ const CartPage = () => {
     fetchProductDetails();
   }, []);
 
-  // Calculate the total price
   useEffect(() => {
     const calculateTotal = () => {
       let totalAmount = 0;
@@ -52,7 +49,7 @@ const CartPage = () => {
       setTotal(totalAmount);
     };
 
-    calculateTotal(); // Recalculate total when cartItems change
+    calculateTotal();
   }, [cartItems]);
 
   const updateCartItem = (itemId, newQuantity) => {
@@ -81,8 +78,16 @@ const CartPage = () => {
     navigate("/checkout", { state: { cartItems } });
   };
 
+  const emptyCart=()=>{
+    navigate("/");
+  }
+
   if (Object.keys(cartItems).length === 0) {
-    return <div>Your cart is empty!</div>;
+    return <div className="max-w-7xl mx-auto h-[500px] flex flex-col items-center   bg-white shadow-lg rounded-lg p-6  mt-[70px]">
+      <img src={Cart} alt="img" className="w-[400px] h-[400px] p-3"/>
+       <p className="font-semibold text-2xl my-3">Your cart is empty!</p>
+      <button onClick={emptyCart} className=" px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors my-3">Start Shopping</button>
+      </div>;
   }
 
   return (
@@ -91,14 +96,13 @@ const CartPage = () => {
         <h2 className="text-2xl font-semibold mb-4">Your Cart</h2>
         <div className="space-y-4">
           {Object.values(cartItems).map((item) => {
-            // Ensure that `item._id` exists before rendering
             if (!item._id) {
               console.error("Item is missing _id:", item);
               return null; // Skip rendering if `_id` is undefined
             }
 
             return (
-              <div key={item._id} className="flex items-center justify-between border-b pb-4">
+              <div key={item._id} className=" flex items-center justify-between border-b pb-4">
                 <div className="flex items-center">
                   <img src={item.images[0]} alt={item.title} className="w-20 h-20 object-cover mr-4" />
                   <div>
@@ -145,3 +149,4 @@ const CartPage = () => {
 };
 
 export default CartPage;
+
