@@ -10,6 +10,8 @@ const app = express();
 
 import { ProductRouter } from "./Routes/productRoute.js";
 import { UserRouter } from "./Routes/userRoute.js";
+import { OrderRouter } from "./Routes/orderRoute.js";
+import { PartnerRouter } from "./Routes/partnerRoute.js";
 
 
 
@@ -23,6 +25,8 @@ app.use(cookieParser());
 
 app.use('/auth',UserRouter);
 app.use('/product',ProductRouter);
+app.use('/order',OrderRouter);
+app.use('/partner',PartnerRouter);
 
 
 

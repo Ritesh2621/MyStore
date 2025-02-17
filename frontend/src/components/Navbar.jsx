@@ -142,6 +142,10 @@ const Navbar = ({ setActiveSection, onSearch }) => {
                     <IoBagCheckSharp size={20} />
                     My Orders
                   </Link>
+                  <Link to="/myorders" className="flex items-center gap-2 hover:text-gray-300 transition">
+                    <IoBagCheckSharp size={20} />
+                    Wishlist
+                  </Link>
                   <Link to="/profile" className="flex items-center gap-2 hover:text-gray-300 transition">
                   <FaUser size={20} /> 
                   Profile

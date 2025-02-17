@@ -75,8 +75,9 @@ const CartPage = () => {
   };
 
   const checkout = () => {
-    navigate("/checkout", { state: { cartItems } });
+    navigate("/checkout", { state: { cartItems, total } });
   };
+  
 
   const emptyCart=()=>{
     navigate("/");

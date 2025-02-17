@@ -12,6 +12,9 @@ import ScrollToTop from "./components/ScrollToTop";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import CustomerProfile from "./components/CustomerProfile";
+import Wishlist from "./components/Wishlist";
+import UpdateTrack from "./components/UpdateTrack";
+import PendingOrder from "./components/PendingOrder";
 
 
 function App() {
@@ -30,6 +33,9 @@ function App() {
         <Route path="/myorders" element={<MyOrdersPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Register />} />
+        <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/update-track" element={<UpdateTrack />} />
+        <Route path="/pending-order" element={<PendingOrder />} />
       </Routes>
     
       </ScrollToTop>

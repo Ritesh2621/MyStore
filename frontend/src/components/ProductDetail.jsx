@@ -87,6 +87,9 @@ const ProductDetail = () => {
   const backtohome =()=>{
     navigate("/");
   }
+  const wishlist =()=>{
+    navigate("/wishlist");
+  }
 
   if (loading) {
     return (
@@ -186,6 +189,12 @@ const ProductDetail = () => {
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold shadow-md"
             >
               Buy Now
+            </button>
+            <button
+              onClick={wishlist}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold shadow-md"
+            >
+              Add to Wishlist
             </button>
           </div>
   

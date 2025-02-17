@@ -1,5 +1,6 @@
 import express from "express";
 import { ProductModel } from "../Model/productModel.js";
+import { UserModel } from "../Model/userModel.js";
 
 const router = express.Router();
 
@@ -61,6 +62,46 @@ router.post('/product', async (req, res) => {
         });
     }
 });
+
+
+router.put("/", async (req, res) => {
+    const product = await ProductModel.findById(req.body.productID);
+    const user = await UserModel.findById(req.body.userID);
+    try {
+      user.wishlist.push(product);
+      await user.save();
+      res.status(201).json({ wishlist: user.wishlist });
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  });
+  
+  // Get id of saved recipes
+  router.get("/wishlist/ids/:userId", async (req, res) => {
+    try {
+      const user = await UserModel.findById(req.params.userId);
+      res.status(201).json({ wishlist: user?.wishlist });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+  });
+  
+  // Get saved recipes
+  router.get("/wishlist/:userId", async (req, res) => {
+    try {
+      const user = await UserModel.findById(req.params.userId);
+      const wishlist = await ProductModel.find({
+        _id: { $in: user.wishlist },
+      });
+  
+      console.log(wishlist);
+      res.status(201).json({ wishlist });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json(err);
+    }
+  });
 
 
 export { router as ProductRouter };

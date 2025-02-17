@@ -1,125 +1,212 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const CheckoutPage = () => {
   const { state } = useLocation();
   const { total, cartItems } = state;
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
-    name: "",
-    address: "",
-    email: "",
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    country: '',
+    state: '',
+    city: '',
+    address: '',
+    pincode: '',
   });
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
+    setFormData({
+      ...formData,
       [name]: value,
-    }));
+    });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    const order = {
-      id: new Date().getTime(), 
-      customer: formData,
-      items: cartItems,
-      total,
-      status: "Pending",
-      date: new Date().toLocaleString(),
-    };
+  const handleSubmitOrder = async () => {
+    try {
+      const userId = localStorage.getItem("userId");
 
-    const existingOrders = JSON.parse(localStorage.getItem("orders")) || [];
-    existingOrders.push(order);
+      if (!userId) {
+        alert("User not logged in. Please log in first.");
+        return;
+      }
 
-    localStorage.setItem("orders", JSON.stringify(existingOrders));
+      const orderData = {
+        customer: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          country: formData.country,
+          state: formData.state,
+          city: formData.city,
+          address: formData.address,
+          pincode: formData.pincode,
+        },
+        products: Object.values(cartItems).map((item) => ({
+          title: item.title,
+          price: item.price,
+          quantity: item.quantity,
+        })),
+        totalAmount: total,
+        userOwner: userId,
+      };
 
-    localStorage.removeItem("cart");
+      const response = await axios.post("http://localhost:4000/order", orderData);
 
-    navigate("/myorders");
+      if (response.status === 201) {
+        navigate("/myorders");
+      }
+    } catch (error) {
+      console.error("Error placing order:", error);
+
+      if (error.response) {
+        console.error("Backend error response:", error.response);
+      } else if (error.request) {
+        console.error("No response received:", error.request);
+        alert("No response from server, please try again.");
+      } else {
+        console.error("Unexpected error:", error.message);
+        alert("Unexpected error occurred. Please try again.");
+      }
+    }
   };
 
   return (
     <div className="py-8 bg-gray-100">
-      <div className="max-w-7xl mx-auto bg-white shadow-lg rounded-lg p-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">Checkout</h1>
-
-        <div className="space-y-4">
-   
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Your Order</h2>
-            {cartItems.map((item) => (
-              <div key={item.id} className="flex justify-between items-center border-b py-4">
-                <div className="flex items-center space-x-4">
-                  <img
-                    src={item.images && item.images[0]}
-                    alt={item.title}
-                    className="w-20 h-20 object-cover rounded-lg"
-                  />
-                  <div>
-                    <h2 className="text-xl font-semibold">{item.title}</h2>
-                    <p className="text-gray-600">${item.price}</p>
-                    <p className="text-gray-600">Quantity: {item.quantity}</p>
-                  </div>
+      <div className="max-w-6xl mx-auto flex gap-6">
+        
+        {/* Left Section: Product & Delivery */}
+        <div className="w-2/3 bg-white shadow-lg rounded-lg p-6">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Product Details</h1>
+          <div className="border rounded-lg p-4">
+            {Object.values(cartItems).map((item) => (
+              <div key={item._id} className="flex items-center space-x-4">
+                <img src={item.images[0]} alt={item.title} className="w-16 h-16 rounded-lg" />
+                <div className="flex-1">
+                  <h2 className="text-lg font-semibold">{item.title}</h2>
+                  <p className="text-gray-600">₹{item.price}</p>
+                  <p className="text-gray-500">Quantity: {item.quantity}</p>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="mt-6 text-right">
-            <h2 className="text-xl font-semibold">Total: ${total}</h2>
+          {/* Delivery Address Form */}
+          <h2 className="text-2xl font-bold text-gray-900 mt-6 mb-4">Delivery Details</h2>
+          <div className="border rounded-lg p-6 bg-white shadow-md">
+            <div className="grid grid-cols-2 gap-4">
+              <input
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleInputChange}
+                placeholder="First Name"
+                className="border p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-purple-600"
+              />
+              <input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleInputChange}
+                placeholder="Last Name"
+                className="border p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-purple-600"
+              />
+            </div>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
+              placeholder="Email"
+              className="border p-3 rounded-lg w-full mt-4 focus:outline-none focus:ring-2 focus:ring-purple-600"
+            />
+            
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <input
+                type="text"
+                name="city"
+                value={formData.city}
+                onChange={handleInputChange}
+                placeholder="City"
+                className="border p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-purple-600"
+              />
+              <input
+                type="text"
+                name="state"
+                value={formData.state}
+                onChange={handleInputChange}
+                placeholder="State"
+                className="border p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-purple-600"
+              />
+            </div>
+            
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <input
+                type="text"
+                name="pincode"
+                value={formData.pincode}
+                onChange={handleInputChange}
+                placeholder="Zip-Code"
+                className="border p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-purple-600"
+              />
+              <input
+                type="text"
+                name="country"
+                value={formData.country}
+                onChange={handleInputChange}
+                placeholder="Country"
+                className="border p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-purple-600"
+              />
+            </div>
+            
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleInputChange}
+              placeholder="Phone"
+              className="border p-3 rounded-lg w-full mt-4 focus:outline-none focus:ring-2 focus:ring-purple-600"
+            />
+            
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleInputChange}
+              placeholder="Address"
+              className="border p-3 rounded-lg w-full mt-4 focus:outline-none focus:ring-2 focus:ring-purple-600"
+            />
+          </div>
+        </div>
+
+        {/* Right Section: Price Details */}
+        <div className="w-1/3 bg-white shadow-lg rounded-lg p-6 h-fit">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Price Details</h2>
+          <div className="border rounded-lg p-4">
+            <div className="flex justify-between text-lg font-semibold">
+              <p>Total Product Price</p>
+              <p>+ ₹{total}</p>
+            </div>
+            <hr className="my-2" />
+            <div className="flex justify-between text-xl font-bold">
+              <p>Order Total</p>
+              <p>₹{total}</p>
+            </div>
           </div>
 
-      
           <div className="mt-6">
-            <h2 className="text-xl font-semibold mb-4">Billing Information</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="mb-4">
-                <label htmlFor="name" className="block text-gray-700">Full Name</label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="address" className="block text-gray-700">Shipping Address</label>
-                <input
-                  type="text"
-                  id="address"
-                  name="address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="email" className="block text-gray-700">Email</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded"
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold w-full sm:w-auto"
-              >
-                Place Order
-              </button>
-            </form>
+            <button
+              onClick={handleSubmitOrder}
+              className="bg-purple-600 text-white w-full py-3 rounded-lg font-semibold text-lg"
+            >
+              Place Order
+            </button>
           </div>
         </div>
       </div>
