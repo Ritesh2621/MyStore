@@ -8,6 +8,7 @@ import { useCookies } from 'react-cookie';
 import { FaUser } from "react-icons/fa";
 
 const Navbar = ({ setActiveSection, onSearch }) => {
+  const [isDropdownVisible, setIsDropdownVisible] = useState(false);
   const [cookies, setCookie] = useCookies(["access_token"]);
   const navigate = useNavigate();
 
@@ -39,6 +40,10 @@ const Navbar = ({ setActiveSection, onSearch }) => {
     setDropdownOpen(false); 
   };
 
+  const handleDropdownClick = () => {
+    setIsDropdownVisible(!isDropdownVisible);
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -54,7 +59,6 @@ const Navbar = ({ setActiveSection, onSearch }) => {
 
   return (
     <nav className="bg-blue-500 text-white p-4 flex flex-col lg:flex lg:flex-row justify-between items-center relative">
-   
       <div className='w-full flex flex-row justify-between items-center'>
         {/* Left side: Store Logo */}
         <div className="text-2xl font-bold font-mono flex items-center gap-2">
@@ -103,9 +107,23 @@ const Navbar = ({ setActiveSection, onSearch }) => {
               {/* If user is a partner, show partner links */}
               {userRole === 'partner' && (
                 <>
-                  <Link to="/pending-order" className="p-4 hover:bg-white hover:text-black rounded-2xl flex items-center gap-2  transition">Order-Details</Link>
-                  <Link to="/update-track" className="p-4 hover:bg-white hover:text-black rounded-2xl flex items-center gap-2  transition">Track</Link>
-                  <button onClick={handleLogout} className="p-4 bg-red-500 text-white rounded-xl m-2 cursor-pointer">Logout</button>
+                  <Link to="/pending-order" className="p-4 hover:bg-white hover:text-black rounded-2xl flex items-center gap-2 transition">Order-Details</Link>
+                  <Link to="/update-track" className="p-4 hover:bg-white hover:text-black rounded-2xl flex items-center gap-2 transition">Track</Link>
+             <div className="relative" ref={dropdownRef}>
+  {/* Show the userRole in uppercase */}
+  <FaUser size={20} onClick={handleDropdownClick} /> 
+
+  {/* Dropdown content - visible when isDropdownVisible is true */}
+  {isDropdownVisible && (
+    <div className="absolute bg-white p-7 shadow-md rounded-md mt-2 w-48 z-10 right-0 ">
+      <p className="text-lg text-center text-black my-2 font-bold">{userRole.toUpperCase()}</p>
+      <button onClick={handleLogout} className="p-4 bg-red-500 text-white rounded-xl cursor-pointer w-full">
+        Logout
+      </button>
+    </div>
+  )}
+</div>
+
                 </>
               )}
 
@@ -142,13 +160,13 @@ const Navbar = ({ setActiveSection, onSearch }) => {
                     <IoBagCheckSharp size={20} />
                     My Orders
                   </Link>
-                  <Link to="/myorders" className="flex items-center gap-2 hover:text-gray-300 transition">
+                  <Link to="/wishlist" className="flex items-center gap-2 hover:text-gray-300 transition">
                     <IoBagCheckSharp size={20} />
                     Wishlist
                   </Link>
                   <Link to="/profile" className="flex items-center gap-2 hover:text-gray-300 transition">
-                  <FaUser size={20} /> 
-                  Profile
+                    <FaUser size={20} /> 
+                    Profile
                   </Link>
                 </>
               )}
@@ -156,8 +174,21 @@ const Navbar = ({ setActiveSection, onSearch }) => {
               {/* If user is an admin, show admin-specific links */}
               {userRole === 'admin' && (
                 <>
-                  <Link to="/priceList" className="p-4 hover:bg-white hover:text-black rounded-2xl flex items-center  transition">PriceList</Link>
-                  <button onClick={handleLogout} className="p-4 bg-red-500 text-white rounded-xl mx-2 cursor-pointer">Logout</button>
+                  <Link to="/priceList" className="p-4 hover:bg-white hover:text-black rounded-2xl flex items-center transition">PriceList</Link>
+                  <div className="relative" ref={dropdownRef}>
+  {/* Show the userRole in uppercase */}
+  <FaUser size={20} onClick={handleDropdownClick} /> 
+
+  {/* Dropdown content - visible when isDropdownVisible is true */}
+  {isDropdownVisible && (
+    <div className="absolute bg-white p-7 shadow-md rounded-md mt-2 w-48 z-10 right-0 ">
+      <p className="text-lg text-center text-black my-2 font-bold">{userRole.toUpperCase()}</p>
+      <button onClick={handleLogout} className="p-4 bg-red-500 text-white rounded-xl cursor-pointer w-full">
+        Logout
+      </button>
+    </div>
+  )}
+</div>
                 </>
               )}
             </>

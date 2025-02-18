@@ -69,6 +69,7 @@ const UpdateTrack = () => {
                                 <th className="border border-gray-300 px-4 py-2 text-left">Customer Phone</th>
                                 <th className="border border-gray-300 px-4 py-2 text-left">Address</th>
                                 <th className="border border-gray-300 px-4 py-2 text-left">Status</th>
+                                <th className="border border-gray-300 px-4 py-2 text-left">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -77,8 +78,9 @@ const UpdateTrack = () => {
                                     <td className="border border-gray-300 px-4 py-2">{record.tokenNumber}</td>
                                     <td className="border border-gray-300 px-4 py-2">{record.customer?.firstName} {record.customer?.lastName || 'Unknown'}</td>
                                     <td className="border border-gray-300 px-4 py-2">{record.userOwner?.phone || 'N/A'}</td>
-                                    <td className="border border-gray-300 px-4 py-2">{record.customer?.address || 'N/A'}</td>
+                                    <td className="border border-gray-300 px-2 py-2">{record.customer?.address || 'N/A'}</td>
                                     <td className="border border-gray-300 px-4 py-2">{record.orderStatus}</td>
+                                    <td className="border border-gray-300 px-4 py-2">View Details</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -125,8 +127,8 @@ const UpdateTrack = () => {
                         >
                             <option value="">-- Select an Order --</option>
                             {trackingRecords.map((record) => (
-                                <option key={record._id} value={record._id}>
-                                    Order ID: {record._id}, Customer: {record.customer?.firstName} {record.customer?.lastName || 'Unknown'}, Status: {record.orderStatus}
+                                <option key={record.tokenNumber} value={record._id}>
+                                    Order ID: {record.tokenNumber}, Customer: {record.customer?.firstName} {record.customer?.lastName || 'Unknown'}, Status: {record.orderStatus}
                                 </option>
                             ))}
                         </select>

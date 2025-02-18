@@ -87,7 +87,7 @@ router.put("/", async (req, res) => {
     }
   });
   
-  // Get saved recipes
+  // Get wishlist
   router.get("/wishlist/:userId", async (req, res) => {
     try {
       const user = await UserModel.findById(req.params.userId);
@@ -102,6 +102,52 @@ router.put("/", async (req, res) => {
       res.status(500).json(err);
     }
   });
+
+// Add product to wishlist
+router.post("/wishlist/:userId", async (req, res) => {
+  try {
+    const { productId } = req.body;
+    const user = await UserModel.findById(req.params.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Check if product is already in wishlist to avoid duplicates
+    if (!user.wishlist.includes(productId)) {
+      user.wishlist.push(productId);
+      await user.save();
+    }
+
+    res.status(200).json({ message: "Product added to wishlist" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+});
+
+router.delete('/wishlist/:userId/:productId', async (req, res) => {
+  const { userId, productId } = req.params;
+
+  try {
+    // Find the user and remove the productId from their wishlist
+    const user = await UserModel.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Remove the product from the wishlist array
+    user.wishlist = user.wishlist.filter(item => item.toString() !== productId);
+    await user.save();
+
+    res.status(200).json({ message: 'Product removed from wishlist'});
+  } catch (error) {
+    console.error('Error removing product from wishlist:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 
 
 export { router as ProductRouter };
