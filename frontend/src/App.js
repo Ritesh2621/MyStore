@@ -15,6 +15,8 @@ import CustomerProfile from "./components/CustomerProfile";
 import Wishlist from "./components/Wishlist";
 import UpdateTrack from "./components/UpdateTrack";
 import PendingOrder from "./components/PendingOrder";
+import Home from "./pages/Home";
+import OrderInfo from "./components/OrderInfo";
 
 
 function App() {
@@ -25,7 +27,7 @@ function App() {
       <ScrollToTop>
       <Navbar setActiveSection={setActiveSection} />
       <Routes>
-        <Route path="/" element={<ProductPage activeSection={activeSection} setActiveSection={setActiveSection} />} />
+        <Route path="/" element={<Home/>} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/cart" element={<CartPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
@@ -36,6 +38,7 @@ function App() {
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/update-track" element={<UpdateTrack />} />
         <Route path="/pending-order" element={<PendingOrder />} />
+        <Route path="/order/:orderId" element={<OrderInfo />} />
       </Routes>
     
       </ScrollToTop>

@@ -148,6 +148,28 @@ router.delete('/wishlist/:userId/:productId', async (req, res) => {
   }
 });
 
+router.get('/categories', async (req, res) => {
+  try {
+    const categories = await ProductModel.aggregate([
+      { $group: { _id: "$category" } },  
+      { $project: { category: "$_id", _id: 0 } } 
+    ]);
+
+  
+    const categoryNames = categories.map(category => category.category);
+
+    
+    res.json(categoryNames);
+  } catch (error) {
+    console.error("Error fetching categories:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+
+
+
 
 
 export { router as ProductRouter };

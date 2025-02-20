@@ -86,21 +86,22 @@ router.get("/:orderId", async (req, res) => {
   const { orderId } = req.params;
 
   try {
+    // Fetch the order using its ID and populate user details (firstName, lastName, email, phone)
     const order = await OrderModel.findById(orderId)
-      .populate("userOwner", "firstName lastName email phone") // populate customer details
+      .populate("userOwner", "firstName lastName email phone") // Populate customer details
       .exec();
 
     if (!order) {
       return res.status(404).json({ message: "Order not found." });
     }
 
+    // Return the order details
     res.status(200).json(order);
   } catch (error) {
     console.error("Error fetching order details:", error);
-    res
-      .status(500)
-      .json({ message: "Internal server error", error: error.message });
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 });
+
 
 export { router as PartnerRouter };
