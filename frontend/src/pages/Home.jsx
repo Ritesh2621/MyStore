@@ -6,10 +6,12 @@ import axios from 'axios';
 const Home = () => {
   const [activeCategory, setActiveCategory] = useState("All Categories");
   const [priceRange, setPriceRange] = useState("0-500");
+  const [rating, setRating] = useState("All Ratings");
+  const [discount, setDiscount] = useState("All Discounts");
   const [products, setProducts] = useState([]);
   
   useEffect(() => {
-    // You can modify this to load products based on activeCategory if you have a local dataset or continue fetching from the API
+    // Fetch products from the API
     const fetchProducts = async () => {
       try {
         const response = await axios.get("http://localhost:4000/product");  // Replace with actual endpoint
@@ -29,10 +31,16 @@ const Home = () => {
         setActiveCategory={setActiveCategory}
         priceRange={priceRange}
         setPriceRange={setPriceRange}
+        rating={rating}       // Pass rating state to CategorySidebar
+        setRating={setRating} // Pass setRating function to CategorySidebar
+        discount={discount}   // Pass discount state to CategorySidebar
+        setDiscount={setDiscount} // Pass setDiscount function to CategorySidebar
       />
       <ProductPage
         activeCategory={activeCategory}
         priceRange={priceRange}
+        rating={rating}
+        discount={discount}
         products={products}
       />
     </div>

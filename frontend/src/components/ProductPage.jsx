@@ -3,7 +3,7 @@ import { FaSearch } from "react-icons/fa";
 import { MdCurrencyRupee } from "react-icons/md";
 import { useNavigate } from "react-router-dom"; // Import useNavigate hook
 
-const ProductPage = ({ activeCategory, priceRange, products }) => {
+const ProductPage = ({ activeCategory, priceRange, rating, discount, products }) => {
   const [searchQuery, setSearchQuery] = useState(""); // Add state for search query
   const navigate = useNavigate(); // Initialize the navigate function
 
@@ -18,6 +18,18 @@ const ProductPage = ({ activeCategory, priceRange, products }) => {
     return product.price >= min && (max ? product.price <= max : true);
   };
 
+  const filterByRating = (product) => {
+    if (rating === "All Ratings") return true;
+    const ratingValue = parseInt(rating.split(" ")[0]); // Extract the rating value from "X Stars & Up"
+    return product.rating >= ratingValue;
+  };
+
+  const filterByDiscount = (product) => {
+    if (discount === "All Discounts") return true;
+    const discountValue = parseInt(discount.split("%")[0]); // Extract discount value
+    return product.discountPercentage >= discountValue;
+  };
+
   const filterBySearchQuery = (product) => {
     return product.title.toLowerCase().includes(searchQuery.toLowerCase());
   };
@@ -25,6 +37,8 @@ const ProductPage = ({ activeCategory, priceRange, products }) => {
   const filteredProducts = products
     .filter(filterByCategory)
     .filter(filterByPriceRange)
+    .filter(filterByRating) // Apply rating filter
+    .filter(filterByDiscount) // Apply discount filter
     .filter(filterBySearchQuery); // Apply the search filter
 
   return (
