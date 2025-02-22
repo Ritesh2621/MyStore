@@ -2,6 +2,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { UserModel } from "../Model/userModel.js";
+import { OrderModel } from "../Model/Order.js";
 import transporter from "../mailConfig.js";
 import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
@@ -162,6 +163,40 @@ if (!decoded) {
       return res.status(401).json({ message: "Token expired" });
     }
     res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Fetch order history for the logged-in user based on user ID
+router.get("/history/:userId", async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    // Fetch the user by ID
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "User not found with the provided user ID" });
+    }
+
+    // Fetch the tracking records for this user (services they own) and populate userOwner field
+    const orderHistory = await OrderModel.find({ userOwner: user._id })
+      .populate("userOwner", "name phone") // Populating only the name and phone fields from UserModel
+      .exec();
+
+    if (orderHistory.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No order history found for this user." });
+    }
+
+    res.status(200).json(orderHistory);
+  } catch (error) {
+    console.error("Error fetching order history:", error);
+    res
+      .status(500)
+      .json({ message: "Internal server error", error: error.message });
   }
 });
 

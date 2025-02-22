@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { CiCirclePlus, CiCircleMinus } from "react-icons/ci";
 import { useNavigate } from "react-router-dom";
-import Cart from "../assets/Cart.jpg"
+import Cart from "../assets/Cart.jpg";
 
 const CartPage = () => {
   const navigate = useNavigate();
@@ -46,7 +46,7 @@ const CartPage = () => {
         const product = cartItems[itemId];
         totalAmount += product.price * product.quantity;
       });
-      setTotal(totalAmount);
+      setTotal(parseFloat(totalAmount.toFixed(2))); // Ensure 2 decimal places
     };
 
     calculateTotal();
@@ -77,24 +77,30 @@ const CartPage = () => {
   const checkout = () => {
     navigate("/checkout", { state: { cartItems, total } });
   };
-  
 
-  const emptyCart=()=>{
+  const emptyCart = () => {
     navigate("/");
-  }
+  };
 
   if (Object.keys(cartItems).length === 0) {
-    return <div className="max-w-7xl mx-auto h-[500px] flex flex-col items-center   bg-white shadow-lg rounded-lg p-6  mt-[70px]">
-      <img src={Cart} alt="img" className="w-[400px] h-[400px] p-3"/>
-       <p className="font-semibold text-2xl my-3">Your cart is empty!</p>
-      <button onClick={emptyCart} className=" px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors my-3">Start Shopping</button>
-      </div>;
+    return (
+      <div className="max-w-7xl mx-auto h-[500px] flex flex-col items-center justify-center bg-white shadow-lg rounded-lg p-6 mt-[70px]">
+        <img src={Cart} alt="img" className="w-[400px] h-[400px] p-3" />
+        <p className="font-semibold text-2xl my-3">Your cart is empty!</p>
+        <button
+          onClick={emptyCart}
+          className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors my-3"
+        >
+          Start Shopping
+        </button>
+      </div>
+    );
   }
 
   return (
-    <div className="bg-gray-100 py-8">
+    <div className="bg-gray-100 min-h-screen py-8">
       <div className="max-w-7xl mx-auto bg-white shadow-lg rounded-lg p-6">
-        <h2 className="text-2xl font-semibold mb-4">Your Cart</h2>
+        <h2 className="text-2xl font-semibold mb-6">Your Cart</h2>
         <div className="space-y-4">
           {Object.values(cartItems).map((item) => {
             if (!item._id) {
@@ -103,29 +109,36 @@ const CartPage = () => {
             }
 
             return (
-              <div key={item._id} className=" flex items-center justify-between border-b pb-4">
+              <div
+                key={item._id}
+                className="flex items-center justify-between border-b pb-4 hover:bg-gray-50 transition-colors p-4 rounded-lg"
+              >
                 <div className="flex items-center">
-                  <img src={item.images[0]} alt={item.title} className="w-20 h-20 object-cover mr-4" />
+                  <img
+                    src={item.images[0]}
+                    alt={item.title}
+                    className="w-20 h-20 object-cover rounded-lg mr-4"
+                  />
                   <div>
                     <h3 className="text-xl font-semibold">{item.title}</h3>
-                    <p className="text-gray-600">Rs {item.price}</p>
+                    <p className="text-gray-600">Rs {item.price.toFixed(2)}</p> {/* Ensure 2 decimal places */}
                   </div>
                 </div>
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-2">
                     <CiCircleMinus
-                      onClick={() => updateCartItem(item._id, item.quantity - 1)} // Decrease quantity
-                      className="cursor-pointer h-6 w-6"
+                      onClick={() => updateCartItem(item._id, item.quantity - 1)}
+                      className="cursor-pointer h-6 w-6 text-gray-600 hover:text-blue-600 transition-colors"
                     />
                     <span className="text-lg font-medium">{item.quantity}</span>
                     <CiCirclePlus
-                      onClick={() => updateCartItem(item._id, item.quantity + 1)} // Increase quantity
-                      className="cursor-pointer h-6 w-6"
+                      onClick={() => updateCartItem(item._id, item.quantity + 1)}
+                      className="cursor-pointer h-6 w-6 text-gray-600 hover:text-blue-600 transition-colors"
                     />
                   </div>
                   <button
-                    onClick={() => removeFromCart(item._id)} // Remove from cart
-                    className="bg-red-600 text-white px-4 py-2 rounded-lg"
+                    onClick={() => removeFromCart(item._id)}
+                    className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
                   >
                     Remove
                   </button>
@@ -135,14 +148,17 @@ const CartPage = () => {
           })}
         </div>
 
-        <div className="mt-6 flex justify-between items-center">
-          <p className="text-2xl font-semibold">Total: Rs {total}</p>
-          <button
-            onClick={checkout}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg"
-          >
-            Checkout
-          </button>
+        {/* Sticky Total Section */}
+        <div className="sticky bottom-0 bg-white py-4 border-t mt-6">
+          <div className="flex justify-between items-center">
+            <p className="text-2xl font-semibold">Total: Rs {total.toFixed(2)}</p> {/* Ensure 2 decimal places */}
+            <button
+              onClick={checkout}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Checkout
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -150,4 +166,3 @@ const CartPage = () => {
 };
 
 export default CartPage;
-

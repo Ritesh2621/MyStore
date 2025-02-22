@@ -4,43 +4,44 @@ import ProductPage from '../components/ProductPage';
 import axios from 'axios';
 
 const Home = () => {
-  const [activeCategory, setActiveCategory] = useState("All Categories");
-  const [priceRange, setPriceRange] = useState("0-500");
-  const [rating, setRating] = useState("All Ratings");
-  const [discount, setDiscount] = useState("All Discounts");
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
+  const [selectedRatings, setSelectedRatings] = useState([]);
+  const [selectedDiscounts, setSelectedDiscounts] = useState([]);
   const [products, setProducts] = useState([]);
-  
+
   useEffect(() => {
-    // Fetch products from the API
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/product");  // Replace with actual endpoint
+        const response = await axios.get("http://localhost:4000/product");
+        console.log("Fetched products:", response.data); // Log products
         setProducts(response.data);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     };
-    
+  
     fetchProducts();
   }, []);
   
+
   return (
     <div className="flex">
       <CategorySidebar
-        activeCategory={activeCategory}
-        setActiveCategory={setActiveCategory}
-        priceRange={priceRange}
-        setPriceRange={setPriceRange}
-        rating={rating}       // Pass rating state to CategorySidebar
-        setRating={setRating} // Pass setRating function to CategorySidebar
-        discount={discount}   // Pass discount state to CategorySidebar
-        setDiscount={setDiscount} // Pass setDiscount function to CategorySidebar
+        selectedCategories={selectedCategories}
+        setSelectedCategories={setSelectedCategories}
+        selectedPriceRanges={selectedPriceRanges}
+        setSelectedPriceRanges={setSelectedPriceRanges}
+        selectedRatings={selectedRatings}
+        setSelectedRatings={setSelectedRatings}
+        selectedDiscounts={selectedDiscounts}
+        setSelectedDiscounts={setSelectedDiscounts}
       />
       <ProductPage
-        activeCategory={activeCategory}
-        priceRange={priceRange}
-        rating={rating}
-        discount={discount}
+        selectedCategories={selectedCategories}
+        selectedPriceRanges={selectedPriceRanges}
+        selectedRatings={selectedRatings}
+        selectedDiscounts={selectedDiscounts}
         products={products}
       />
     </div>

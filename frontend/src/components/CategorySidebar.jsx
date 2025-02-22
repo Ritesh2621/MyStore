@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 
 const CategorySidebar = ({
-  activeCategory,
-  setActiveCategory,
-  priceRange,
-  setPriceRange,
-  rating,
-  setRating,
-  discount,
-  setDiscount,
+  selectedCategories,
+  setSelectedCategories,
+  selectedPriceRanges,
+  setSelectedPriceRanges,
+  selectedRatings,
+  setSelectedRatings,
+  selectedDiscounts,
+  setSelectedDiscounts,
 }) => {
   const categories = ["All Categories", "Jewellery", "Clothes", "Home Furnishing"];
   const priceRanges = ["All Price", "0-500", "501-1000", "1001-5000", "5001+"];
@@ -21,58 +21,64 @@ const CategorySidebar = ({
   const [isDiscountOpen, setIsDiscountOpen] = useState(false);
 
   const handleCategoryChange = (category) => {
-    if (activeCategory === category) {
-      setActiveCategory(""); // Deselect if the same category is clicked again
-    } else {
-      setActiveCategory(category);
-    }
-    setIsCategoryOpen(false); // Close dropdown after selection
+    setSelectedCategories((prevCategories) =>
+      prevCategories && prevCategories.includes(category)
+        ? prevCategories.filter((cat) => cat !== category)
+        : [...(prevCategories || []), category] // Ensure it is an array if prevCategories is undefined
+    );
   };
 
   const handlePriceRangeChange = (range) => {
-    if (priceRange === range) {
-      setPriceRange(""); // Deselect if the same price range is clicked again
-    } else {
-      setPriceRange(range);
-    }
-    setIsPriceRangeOpen(false); // Close dropdown after selection
+    setSelectedPriceRanges((prevRanges) =>
+      prevRanges && prevRanges.includes(range)
+        ? prevRanges.filter((r) => r !== range)
+        : [...(prevRanges || []), range] // Ensure it is an array if prevRanges is undefined
+    );
   };
 
-  const handleRatingChange = (newRating) => {
-    if (rating === newRating) {
-      setRating(""); // Deselect if the same rating is clicked again
-    } else {
-      setRating(newRating);
-    }
-    setIsRatingOpen(false); // Close dropdown after selection
+  const handleRatingChange = (rating) => {
+    setSelectedRatings((prevRatings) =>
+      prevRatings && prevRatings.includes(rating)
+        ? prevRatings.filter((r) => r !== rating)
+        : [...(prevRatings || []), rating] // Ensure it is an array if prevRatings is undefined
+    );
   };
 
-  const handleDiscountChange = (newDiscount) => {
-    if (discount === newDiscount) {
-      setDiscount(""); // Deselect if the same discount is clicked again
-    } else {
-      setDiscount(newDiscount);
-    }
-    setIsDiscountOpen(false); // Close dropdown after selection
+  const handleDiscountChange = (discount) => {
+    setSelectedDiscounts((prevDiscounts) =>
+      prevDiscounts && prevDiscounts.includes(discount)
+        ? prevDiscounts.filter((d) => d !== discount)
+        : [...(prevDiscounts || []), discount] // Ensure it is an array if prevDiscounts is undefined
+    );
   };
 
   return (
-    <div className="w-64 p-4 border-r">
+    <div className="w-64 p-6 bg-white shadow-lg rounded-lg">
       {/* Category Section */}
       <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2 cursor-pointer" onClick={() => setIsCategoryOpen(!isCategoryOpen)}>
-          Category
+        <h2
+          className="text-lg font-semibold mb-3 cursor-pointer flex justify-between items-center"
+          onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+        >
+          <span>Category</span>
+          <span className="transform transition-transform">
+            {isCategoryOpen ? "▲" : "▼"}
+          </span>
         </h2>
         {isCategoryOpen && (
-          <div>
+          <div className="space-y-2 pl-4">
             {categories.map((category) => (
-              <label key={category} className="flex items-center gap-2 cursor-pointer">
+              <label
+                key={category}
+                className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-2 rounded"
+              >
                 <input
-                  type="radio"
-                  checked={activeCategory === category}
+                  type="checkbox"
+                  className="form-checkbox h-4 w-4 text-indigo-600"
+                  checked={selectedCategories.includes(category)}
                   onChange={() => handleCategoryChange(category)}
                 />
-                {category}
+                <span className="text-gray-700">{category}</span>
               </label>
             ))}
           </div>
@@ -81,19 +87,29 @@ const CategorySidebar = ({
 
       {/* Price Range Section */}
       <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2 cursor-pointer" onClick={() => setIsPriceRangeOpen(!isPriceRangeOpen)}>
-          Price
+        <h2
+          className="text-lg font-semibold mb-3 cursor-pointer flex justify-between items-center"
+          onClick={() => setIsPriceRangeOpen(!isPriceRangeOpen)}
+        >
+          <span>Price</span>
+          <span className="transform transition-transform">
+            {isPriceRangeOpen ? "▲" : "▼"}
+          </span>
         </h2>
         {isPriceRangeOpen && (
-          <div>
+          <div className="space-y-2 pl-4">
             {priceRanges.map((range) => (
-              <label key={range} className="flex items-center gap-2 cursor-pointer">
+              <label
+                key={range}
+                className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-2 rounded"
+              >
                 <input
-                  type="radio"
-                  checked={priceRange === range}
+                  type="checkbox"
+                  className="form-checkbox h-4 w-4 text-indigo-600"
+                  checked={selectedPriceRanges.includes(range)}
                   onChange={() => handlePriceRangeChange(range)}
                 />
-                {range}
+                <span className="text-gray-700">{range}</span>
               </label>
             ))}
           </div>
@@ -102,19 +118,29 @@ const CategorySidebar = ({
 
       {/* Rating Section */}
       <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2 cursor-pointer" onClick={() => setIsRatingOpen(!isRatingOpen)}>
-          Rating
+        <h2
+          className="text-lg font-semibold mb-3 cursor-pointer flex justify-between items-center"
+          onClick={() => setIsRatingOpen(!isRatingOpen)}
+        >
+          <span>Rating</span>
+          <span className="transform transition-transform">
+            {isRatingOpen ? "▲" : "▼"}
+          </span>
         </h2>
         {isRatingOpen && (
-          <div>
+          <div className="space-y-2 pl-4">
             {ratings.map((rate) => (
-              <label key={rate} className="flex items-center gap-2 cursor-pointer">
+              <label
+                key={rate}
+                className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-2 rounded"
+              >
                 <input
-                  type="radio"
-                  checked={rating === rate}
+                  type="checkbox"
+                  className="form-checkbox h-4 w-4 text-indigo-600"
+                  checked={selectedRatings.includes(rate)}
                   onChange={() => handleRatingChange(rate)}
                 />
-                {rate}
+                <span className="text-gray-700">{rate}</span>
               </label>
             ))}
           </div>
@@ -123,19 +149,29 @@ const CategorySidebar = ({
 
       {/* Discount Section */}
       <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2 cursor-pointer" onClick={() => setIsDiscountOpen(!isDiscountOpen)}>
-          Discount
+        <h2
+          className="text-lg font-semibold mb-3 cursor-pointer flex justify-between items-center"
+          onClick={() => setIsDiscountOpen(!isDiscountOpen)}
+        >
+          <span>Discount</span>
+          <span className="transform transition-transform">
+            {isDiscountOpen ? "▲" : "▼"}
+          </span>
         </h2>
         {isDiscountOpen && (
-          <div>
+          <div className="space-y-2 pl-4">
             {discounts.map((disc) => (
-              <label key={disc} className="flex items-center gap-2 cursor-pointer">
+              <label
+                key={disc}
+                className="flex items-center gap-2 cursor-pointer hover:bg-gray-100 p-2 rounded"
+              >
                 <input
-                  type="radio"
-                  checked={discount === disc}
+                  type="checkbox"
+                  className="form-checkbox h-4 w-4 text-indigo-600"
+                  checked={selectedDiscounts.includes(disc)}
                   onChange={() => handleDiscountChange(disc)}
                 />
-                {disc}
+                <span className="text-gray-700">{disc}</span>
               </label>
             ))}
           </div>

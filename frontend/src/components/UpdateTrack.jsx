@@ -10,6 +10,13 @@ const UpdateTrack = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
+    const [filters, setFilters] = useState({
+        tokenNumber: '',
+        name: '',
+        phone: '',
+        address: '',
+        status: ''
+    });
 
     // Fetch all tracking records for the partner
     useEffect(() => {
@@ -43,7 +50,25 @@ const UpdateTrack = () => {
 
     // Pagination logic
     const totalPages = Math.ceil(trackingRecords.length / ITEMS_PER_PAGE);
-    const currentRecords = trackingRecords.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+    const filteredOrders = () => {
+        return trackingRecords.filter(order => {
+            const tokenNumber = (order.tokenNumber?.toString() || '').toLowerCase(); // Ensure it's a string
+            const fullName = `${order.customer?.firstName} ${order.customer?.lastName}`.toLowerCase();
+            const phone = order.userOwner?.phone?.toLowerCase() || '';
+            const address = order.customer?.address?.toLowerCase() || '';
+            const status = order.orderStatus?.toLowerCase() || '';
+    
+            return (
+                (filters.tokenNumber === '' || tokenNumber.includes(filters.tokenNumber.toLowerCase())) &&
+                (filters.name === '' || fullName.includes(filters.name.toLowerCase())) &&
+                (filters.phone === '' || phone.includes(filters.phone.toLowerCase())) &&
+                (filters.address === '' || address.includes(filters.address.toLowerCase())) &&
+                (filters.status === '' || status.includes(filters.status.toLowerCase()))
+            );
+        });
+    };
+    
+    const currentRecords = filteredOrders().slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
     const handlePrevPage = () => {
         if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -51,6 +76,10 @@ const UpdateTrack = () => {
 
     const handleNextPage = () => {
         if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+    };
+
+    const handleFilterChange = (e, key) => {
+        setFilters(prev => ({ ...prev, [key]: e.target.value }));
     };
 
     return (
@@ -61,6 +90,22 @@ const UpdateTrack = () => {
                     {error && <p className="text-red-500 text-center mb-4">{error}</p>}
                     {success && <p className="text-green-500 text-center mb-4">{success}</p>}
                     
+                    {/* Filters Row */}
+                    <div className="mb-6 flex justify-between">
+                        {Object.keys(filters).map((key) => (
+                            <div key={key} className="flex flex-col w-1/5">
+                                <label className="text-sm font-semibold">{key.charAt(0).toUpperCase() + key.slice(1)}</label>
+                                <input
+                                    type="text"
+                                    className="border rounded w-full p-2"
+                                    placeholder={`Search ${key}...`}
+                                    value={filters[key]}
+                                    onChange={(e) => handleFilterChange(e, key)}
+                                />
+                            </div>
+                        ))}
+                    </div>
+
                     <table className="min-w-full border-collapse border border-gray-300 shadow-lg">
                         <thead className="bg-gray-100">
                             <tr>

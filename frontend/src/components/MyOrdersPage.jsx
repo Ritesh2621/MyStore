@@ -67,7 +67,7 @@ const MyOrdersPage = () => {
                 
                 <p className="text-gray-600">Name: {order.customer.firstName + " " + order.customer.lastName}</p>
                 <p className="text-gray-600">Phone: {order.customer.phone}</p>
-                <p className="text-gray-600">Total: ${order.totalAmount}</p>
+                <p className="text-gray-600">Total: Rs {order.totalAmount}</p>
                 <p className="text-gray-600">Status: {order.orderStatus}</p>
               </div>
             ))}
