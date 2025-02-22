@@ -17,7 +17,7 @@ const MyOrdersPage = () => {
 
       try {
         // Fetch orders from the API
-        const response = await fetch(`http://localhost:4000/order/${userId}`); // Your API endpoint
+        const response = await fetch(`http://localhost:4000/order/${userId} `); 
         if (!response.ok) {
           throw new Error("Failed to fetch orders");
         }
@@ -59,7 +59,7 @@ const MyOrdersPage = () => {
                   <ul>
                     {order.products.map((item) => (
                       <li key={item._id} className="text-gray-600">
-                        {item.title} (x{item.quantity}) - Rs {item.price}
+                        {item.title} (x{item.quantity}) - Rs{item.price}
                       </li>
                     ))}
                   </ul>
@@ -67,7 +67,7 @@ const MyOrdersPage = () => {
                 
                 <p className="text-gray-600">Name: {order.customer.firstName + " " + order.customer.lastName}</p>
                 <p className="text-gray-600">Phone: {order.customer.phone}</p>
-                <p className="text-gray-600">Total: Rs {order.totalAmount}</p>
+                <p className="text-gray-600">Total: ${order.totalAmount}</p>
                 <p className="text-gray-600">Status: {order.orderStatus}</p>
               </div>
             ))}
