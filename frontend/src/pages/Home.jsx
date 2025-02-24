@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CategorySidebar from '../components/CategorySidebar';
 import ProductPage from '../components/ProductPage';
 import axios from 'axios';
+import MenuBar from '../components/MenuBar';
 
 const Home = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -26,6 +27,8 @@ const Home = () => {
   
 
   return (
+    <>
+    <MenuBar/>
     <div className="flex">
       <CategorySidebar
         selectedCategories={selectedCategories}
@@ -45,6 +48,7 @@ const Home = () => {
         products={products}
       />
     </div>
+    </>
   );
 };
 

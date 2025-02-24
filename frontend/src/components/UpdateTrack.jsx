@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const ITEMS_PER_PAGE = 5; // Number of records per page
-
 const UpdateTrack = () => {
     const [trackingRecords, setTrackingRecords] = useState([]);
     const [selectedRecord, setSelectedRecord] = useState(null);
@@ -35,6 +35,16 @@ const UpdateTrack = () => {
     // Handle form submission to update tracking record status
     const handleUpdate = async (e) => {
         e.preventDefault();
+    
+        // Validation for invalid status update
+        if (
+            (selectedRecord.orderStatus === 'shipped' && status === 'pending') ||
+            (selectedRecord.orderStatus === 'delivered' && (status === 'pending' || status === 'shipped'))
+        ) {
+            setError('Cannot update the status as requested.');
+            return;
+        }
+    
         try {
             const updatedRecord = { orderStatus: status }; // Send the status update
             await axios.patch(`http://localhost:4000/partner/${selectedRecord._id}/status`, updatedRecord); // Adjust endpoint for updating status
@@ -47,9 +57,8 @@ const UpdateTrack = () => {
             setError(err.response?.data?.message || 'Failed to update tracking record');
         }
     };
-
-    // Pagination logic
-    const totalPages = Math.ceil(trackingRecords.length / ITEMS_PER_PAGE);
+    
+    // Filter orders based on filters
     const filteredOrders = () => {
         return trackingRecords.filter(order => {
             const tokenNumber = (order.tokenNumber?.toString() || '').toLowerCase(); // Ensure it's a string
@@ -68,7 +77,9 @@ const UpdateTrack = () => {
         });
     };
     
-    const currentRecords = filteredOrders().slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+    const filteredOrdersData = filteredOrders(); // Get the filtered orders data
+    const totalPages = Math.ceil(filteredOrdersData.length / ITEMS_PER_PAGE); // Calculate total pages based on filtered data
+    const currentRecords = filteredOrdersData.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE); // Get records for the current page
 
     const handlePrevPage = () => {
         if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -80,6 +91,7 @@ const UpdateTrack = () => {
 
     const handleFilterChange = (e, key) => {
         setFilters(prev => ({ ...prev, [key]: e.target.value }));
+        setCurrentPage(1); // Reset to the first page when a filter is applied
     };
 
     return (
@@ -112,7 +124,7 @@ const UpdateTrack = () => {
                                 <th className="border border-gray-300 px-4 py-2 text-left">Token Number</th>
                                 <th className="border border-gray-300 px-4 py-2 text-left">Customer Name</th>
                                 <th className="border border-gray-300 px-4 py-2 text-left">Customer Phone</th>
-                                <th className="border border-gray-300 px-4 py-2 text-left">Address</th>
+                                <th className="border border-gray-300 px-2 py-2 text-left">Address</th>
                                 <th className="border border-gray-300 px-4 py-2 text-left">Status</th>
                                 <th className="border border-gray-300 px-4 py-2 text-left">Actions</th>
                             </tr>
@@ -125,7 +137,11 @@ const UpdateTrack = () => {
                                     <td className="border border-gray-300 px-4 py-2">{record.userOwner?.phone || 'N/A'}</td>
                                     <td className="border border-gray-300 px-2 py-2">{record.customer?.address || 'N/A'}</td>
                                     <td className="border border-gray-300 px-4 py-2">{record.orderStatus}</td>
-                                    <td className="border border-gray-300 px-4 py-2">View Details</td>
+                                    <Link to={`/order/${record._id}`} className="border border-gray-300 bg-blue-500 hover:bg-blue-700 text-white px-2 pb-5">
+                                        <span className='mr-0'> 
+                                            View Details
+                                        </span>
+                                    </Link>
                                 </tr>
                             ))}
                         </tbody>
