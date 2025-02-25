@@ -26,7 +26,7 @@ router.get("/:id",async(req,res)=>{
 
 router.post('/product', async (req, res) => {
     try {
-        const { title, description, category,subcategory, price, discountPercentage, rating, brand, images,sellername,quantity,warrantyInformation,shippingInformation } = req.body;
+        const { title, description, category,subcategory,subsubcategory, price, discountPercentage, rating, brand, images,sellername,quantity,warrantyInformation,shippingInformation } = req.body;
 
         // Create a new instance of ProductModel with the updated schema
         const newProduct = new ProductModel({
@@ -34,6 +34,7 @@ router.post('/product', async (req, res) => {
             description,
             category,
             subcategory,
+            subsubcategory,
             price,
             discountPercentage,
             rating,
@@ -148,28 +149,38 @@ router.delete('/wishlist/:userId/:productId', async (req, res) => {
   }
 });
 
-router.get('/categories', async (req, res) => {
+
+router.get('/products-by-category/:category', async (req, res) => {
   try {
-    const categories = await ProductModel.aggregate([
-      { $group: { _id: "$category" } },  
-      { $project: { category: "$_id", _id: 0 } } 
-    ]);
-
-  
-    const categoryNames = categories.map(category => category.category);
-
-    
-    res.json(categoryNames);
+    const products = await ProductModel.find({ category: req.params.category }); // Querying by category (string)
+    res.json(products);
   } catch (error) {
-    console.error("Error fetching categories:", error.message);
+    console.error("Error fetching products by category:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.get('/products-by-subcategory/:subcategory', async (req, res) => {
+  try {
+    const products = await ProductModel.find({ subcategory: req.params.subcategory }); // Querying by subcategory (string)
+    res.json(products);
+  } catch (error) {
+    console.error("Error fetching products by subcategory:", error.message);
     res.status(500).json({ message: error.message });
   }
 });
 
 
 
-
-
+router.get('/products-by-subsubcategory/:subsubcategory', async (req, res) => {
+  try {
+    const products = await ProductModel.find({ subsubcategory: req.params.subsubcategory }); // Querying by subsubcategory (string)
+    res.json(products);
+  } catch (error) {
+    console.error("Error fetching products by subsubcategory:", error.message);
+    res.status(500).json({ message: error.message });
+  }
+});
 
 
 export { router as ProductRouter };
