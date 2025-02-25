@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { IoIosArrowDropdown } from "react-icons/io";
+import { IoIosArrowDropup } from "react-icons/io";
 
 const CategorySidebar = ({
   selectedCategories,
@@ -62,7 +64,7 @@ const CategorySidebar = ({
         >
           <span>Category</span>
           <span className="transform transition-transform">
-            {isCategoryOpen ? "▲" : "▼"}
+            {isCategoryOpen ? <IoIosArrowDropup/> : <IoIosArrowDropdown/>}
           </span>
         </h2>
         {isCategoryOpen && (
@@ -93,7 +95,7 @@ const CategorySidebar = ({
         >
           <span>Price</span>
           <span className="transform transition-transform">
-            {isPriceRangeOpen ? "▲" : "▼"}
+            {isPriceRangeOpen ? <IoIosArrowDropup/> : <IoIosArrowDropdown/>}
           </span>
         </h2>
         {isPriceRangeOpen && (
@@ -123,8 +125,8 @@ const CategorySidebar = ({
           onClick={() => setIsRatingOpen(!isRatingOpen)}
         >
           <span>Rating</span>
-          <span className="transform transition-transform">
-            {isRatingOpen ? "▲" : "▼"}
+          <span className="transform transition-transform ">
+            {isRatingOpen ? <IoIosArrowDropup/> : <IoIosArrowDropdown/>}
           </span>
         </h2>
         {isRatingOpen && (
@@ -155,7 +157,7 @@ const CategorySidebar = ({
         >
           <span>Discount</span>
           <span className="transform transition-transform">
-            {isDiscountOpen ? "▲" : "▼"}
+            {isDiscountOpen ? <IoIosArrowDropup/> : <IoIosArrowDropdown/>}
           </span>
         </h2>
         {isDiscountOpen && (
