@@ -8,14 +8,9 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: { 
     type: String, 
-    enum: ['user', 'admin', 'partner'],  
+    enum: ['user', 'admin', 'partner','seller'],  
     default: 'user',
   },
-  servicesUsed: [{
-    type: mongoose.Schema.Types.ObjectId,
-    // ref: 'Tracking',
-    default:'none', 
-  }],
   wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
 });
 

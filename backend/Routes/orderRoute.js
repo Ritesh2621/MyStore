@@ -1,8 +1,10 @@
 import express from "express";
-import {OrderModel} from "../Model/Order.js";
+import { OrderModel } from "../Model/Order.js";
+import { ProductModel } from "../Model/productModel.js";
 
 const router = express.Router();
 
+// ✅ POST Create Order
 router.post("/", async (req, res) => {
   try {
     const { customer, products, totalAmount, userOwner } = req.body;
@@ -29,10 +31,11 @@ router.post("/", async (req, res) => {
     // Return the created order
     res.status(201).json(newOrder);
   } catch (error) {
-    console.error("Error creating order:", error); // Log the full error
-    res.status(500).json({ message: "Server Error", error: error.message }); // Log the error message in the response
+    console.error("Error creating order:", error);
+    res.status(500).json({ message: "Server Error", error: error.message });
   }
 });
+
 // ✅ GET Orders by User ID (For User Panel)
 router.get("/:userId", async (req, res) => {
   try {
@@ -59,10 +62,38 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
+// ✅ GET Orders for Seller (For Seller Panel)
+router.get("/orders-by-seller/:sellerId", async (req, res) => {
+  try {
+    const sellerId = req.params.sellerId;
+
+    // Validate sellerId format
+    if (!sellerId.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid Seller ID" });
+    }
+
+    // Fetch orders where the sellerId is present in the product's sellerId
+    const orders = await OrderModel.find({
+      "products.sellerId": sellerId, // Filter orders based on sellerId in the products
+    }).populate("userOwner"); // Optionally populate userOwner if needed
+
+    // If no orders found, return an empty array
+    if (!orders.length) {
+      return res.status(200).json([]);
+    }
+
+    // Return the orders for the seller
+    res.json(orders);
+  } catch (error) {
+    console.error("Error fetching orders for seller:", error);
+    res.status(500).json({ message: "Server Error", error });
+  }
+});
+
 // ✅ GET All Orders (For Admin Panel)
 router.get("/", async (req, res) => {
   try {
-    const orders = await OrderModel.find().populate("userOwner"); // Fetch all orders with user details
+    const orders = await OrderModel.find().populate("userOwner");
     res.json(orders);
   } catch (error) {
     console.error("Error fetching orders:", error);

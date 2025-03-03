@@ -28,6 +28,13 @@ const CheckoutPage = () => {
   };
 
   const handleSubmitOrder = async () => {
+    // Check if the form is valid
+    const isFormValid = Object.values(formData).every(value => value.trim() !== '');
+    if (!isFormValid) {
+      alert("Please fill in all the required fields.");
+      return;
+    }
+
     try {
       const userId = localStorage.getItem("userId");
 
@@ -36,7 +43,9 @@ const CheckoutPage = () => {
         return;
       }
 
+      // Create orderData object
       const orderData = {
+        tokenNumber: Math.floor(Math.random() * 1000000), // Generate a unique token number
         customer: {
           firstName: formData.firstName,
           lastName: formData.lastName,
@@ -52,11 +61,14 @@ const CheckoutPage = () => {
           title: item.title,
           price: item.price,
           quantity: item.quantity,
+          sellerId: localStorage.getItem('userId'),
         })),
         totalAmount: total,
+        orderStatus: 'pending', // Initial order status
         userOwner: userId,
       };
 
+      // Send the order data to the backend
       const response = await axios.post("http://localhost:4000/order", orderData);
 
       if (response.status === 201) {
@@ -80,9 +92,8 @@ const CheckoutPage = () => {
   return (
     <div className="py-8 bg-gray-100">
       <div className="max-w-6xl mx-auto flex gap-6">
-        
         {/* Left Section: Product & Delivery */}
-        <div className="w-2/3 bg-white shadow-lg rounded-lg p-6 ">
+        <div className="w-2/3 bg-white shadow-lg rounded-lg p-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Product Details</h1>
           <div className="border rounded-lg p-4">
             {Object.values(cartItems).map((item) => (

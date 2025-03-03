@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const productSchema = new mongoose.Schema({
-   title: {
+  title: {
     type: String,
     required: true,
   },
@@ -13,11 +13,11 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  subcategory:{
-  type:String
+  subcategory: {
+    type: String,
   },
-  subsubcategory:{
-   type:String
+  subsubcategory: {
+    type: String,
   },
   price: {
     type: Number,
@@ -39,28 +39,33 @@ const productSchema = new mongoose.Schema({
     {
       type: String,
       required: true,
-    }
+    },
   ],
-  reviews:[
+  reviews: [
     {
-      type:String
-    }
+      type: String,
+    },
   ],
-  sellername:{
-    type:String,
-    required:true
+  sellername: {
+    type: String,
+    required: true,
   },
-  quantity:{
-    type:String,
-    required:true
+  sellerId: {
+    type: mongoose.Schema.Types.ObjectId,  // Link to the user who is selling this product
+    ref: 'User',  // Assuming you have a 'User' model to associate with
+    required: true,
+  },
+  quantity: {
+    type: String,
+    required: true,
   },
   warrantyInformation: {
-    type:String,
-    required:true
+    type: String,
+    required: true,
   },
-  shippingInformation:{
-      type:String,
-      required:true
+  shippingInformation: {
+    type: String,
+    required: true,
   },
 });
 

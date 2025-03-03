@@ -17,6 +17,10 @@ import UpdateTrack from "./components/UpdateTrack";
 import PendingOrder from "./components/PendingOrder";
 import Home from "./pages/Home";
 import OrderInfo from "./components/OrderInfo";
+import AdminDashboard from "./components/admin/AdminDashboard";
+import Supplier from "./components/seller/Supplier";
+import SupplierRegister from "./components/seller/SupplierRegistration";
+import SupplierDashboard from "./components/seller/SupplierDashboard";
 
 
 function App() {
@@ -39,6 +43,10 @@ function App() {
         <Route path="/update-track" element={<UpdateTrack />} />
         <Route path="/pending-order" element={<PendingOrder />} />
         <Route path="/order/:orderId" element={<OrderInfo />} />
+        <Route path="/dashboard" element={<AdminDashboard />} />
+        <Route path="/supplier" element={<Supplier />} />
+        <Route path="/supplier-registration" element={<SupplierRegister />} />
+        <Route path="/supplier-dashboard" element={<SupplierDashboard />} />
       </Routes>
     
       </ScrollToTop>

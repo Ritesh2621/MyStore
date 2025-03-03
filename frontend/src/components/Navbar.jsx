@@ -90,6 +90,9 @@ const Navbar = ({ onSearch }) => {
 
               {userRole === 'user' && (
                 <>
+                  <Link to="/supplier" className="flex items-center gap-2 hover:text-gray-300 transition">
+                    Become a Supplier
+                  </Link>
                   <Link to="/cart" className="flex items-center gap-2 hover:text-gray-300 transition">
                     <FaCartShopping size={20} />
                     Cart
@@ -111,7 +114,35 @@ const Navbar = ({ onSearch }) => {
 
               {userRole === 'admin' && (
                 <>
-                  <Link to="/priceList" className="p-4 hover:bg-white hover:text-black rounded-2xl flex items-center transition">PriceList</Link>
+                  <Link to="/dashboard" className="p-4 hover:bg-white hover:text-black rounded-2xl flex items-center transition">Dashboard</Link>
+                  <div className="relative" ref={dropdownRef}>
+                    <FaUser size={20} onClick={handleDropdownClick} /> 
+                    {isDropdownVisible && (
+                      <div className="absolute bg-white p-7 shadow-md rounded-md mt-2 w-48 z-10 right-0 ">
+                        <p className="text-lg text-center text-black my-2 font-bold">{userRole.toUpperCase()}</p>
+                        <button onClick={handleLogout} className="p-4 bg-red-500 text-white rounded-xl cursor-pointer w-full">
+                          Logout
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+              {userRole === 'seller' && (
+                <>
+                  <Link to="/supplier-dashboard" className="p-4 hover:bg-white hover:text-black rounded-2xl flex items-center transition">Dashboard</Link>
+                  <Link to="/cart" className="flex items-center gap-2 hover:text-gray-300 transition">
+                    <FaCartShopping size={20} />
+                    Cart
+                  </Link>
+                  <Link to="/myorders" className="flex items-center gap-2 hover:text-gray-300 transition">
+                    <IoBagCheckSharp size={20} />
+                    My Orders
+                  </Link>
+                  <Link to="/wishlist" className="flex items-center gap-2 hover:text-gray-300 transition">
+                    <IoBagCheckSharp size={20} />
+                    Wishlist
+                  </Link>
                   <div className="relative" ref={dropdownRef}>
                     <FaUser size={20} onClick={handleDropdownClick} /> 
                     {isDropdownVisible && (

@@ -12,6 +12,8 @@ import { ProductRouter } from "./Routes/productRoute.js";
 import { UserRouter } from "./Routes/userRoute.js";
 import { OrderRouter } from "./Routes/orderRoute.js";
 import { PartnerRouter } from "./Routes/partnerRoute.js";
+import { AdminRouter } from "./Routes/adminRoute.js";
+import { SupplierRouter } from "./Routes/supplierRoute.js";
 
 
 
@@ -27,6 +29,8 @@ app.use('/auth',UserRouter);
 app.use('/product',ProductRouter);
 app.use('/order',OrderRouter);
 app.use('/partner',PartnerRouter);
+app.use('/admin',AdminRouter);
+app.use('/supplier',SupplierRouter);
 
 
 

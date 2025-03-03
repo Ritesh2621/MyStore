@@ -10,12 +10,12 @@ const Home = () => {
   const [selectedRatings, setSelectedRatings] = useState([]);
   const [selectedDiscounts, setSelectedDiscounts] = useState([]);
   const [products, setProducts] = useState([]);
+  const [selectedSubsubcategory, setSelectedSubsubcategory] = useState(null); // New state
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const response = await axios.get("http://localhost:4000/product");
-        console.log("Fetched products:", response.data); // Log products
         setProducts(response.data);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -24,30 +24,45 @@ const Home = () => {
   
     fetchProducts();
   }, []);
-  
+
+  // Fetch products based on selected subsubcategory
+  useEffect(() => {
+    if (selectedSubsubcategory) {
+      const fetchFilteredProducts = async () => {
+        try {
+          const response = await axios.get(`http://localhost:4000/product/products-by-subsubcategory/${selectedSubsubcategory}`);
+          setProducts(response.data);
+        } catch (error) {
+          console.error("Error fetching products for subsubcategory:", error);
+        }
+      };
+
+      fetchFilteredProducts();
+    }
+  }, [selectedSubsubcategory]); // Runs when subsubcategory is selected
 
   return (
     <>
-    <MenuBar/>
-    <div className="flex">
-      <CategorySidebar
-        selectedCategories={selectedCategories}
-        setSelectedCategories={setSelectedCategories}
-        selectedPriceRanges={selectedPriceRanges}
-        setSelectedPriceRanges={setSelectedPriceRanges}
-        selectedRatings={selectedRatings}
-        setSelectedRatings={setSelectedRatings}
-        selectedDiscounts={selectedDiscounts}
-        setSelectedDiscounts={setSelectedDiscounts}
-      />
-      <ProductPage
-        selectedCategories={selectedCategories}
-        selectedPriceRanges={selectedPriceRanges}
-        selectedRatings={selectedRatings}
-        selectedDiscounts={selectedDiscounts}
-        products={products}
-      />
-    </div>
+      <MenuBar setSelectedSubsubcategory={setSelectedSubsubcategory} />
+      <div className="flex">
+        <CategorySidebar
+          selectedCategories={selectedCategories}
+          setSelectedCategories={setSelectedCategories}
+          selectedPriceRanges={selectedPriceRanges}
+          setSelectedPriceRanges={setSelectedPriceRanges}
+          selectedRatings={selectedRatings}
+          setSelectedRatings={setSelectedRatings}
+          selectedDiscounts={selectedDiscounts}
+          setSelectedDiscounts={setSelectedDiscounts}
+        />
+        <ProductPage
+          selectedCategories={selectedCategories}
+          selectedPriceRanges={selectedPriceRanges}
+          selectedRatings={selectedRatings}
+          selectedDiscounts={selectedDiscounts}
+          products={products}
+        />
+      </div>
     </>
   );
 };

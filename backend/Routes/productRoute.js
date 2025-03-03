@@ -25,44 +25,50 @@ router.get("/:id",async(req,res)=>{
 })
 
 router.post('/product', async (req, res) => {
-    try {
-        const { title, description, category,subcategory,subsubcategory, price, discountPercentage, rating, brand, images,sellername,quantity,warrantyInformation,shippingInformation } = req.body;
+  try {
+      const { title, description, category, subcategory, subsubcategory, price, discountPercentage, rating, brand, images, sellername, quantity, warrantyInformation, shippingInformation, sellerId } = req.body;
 
-        // Create a new instance of ProductModel with the updated schema
-        const newProduct = new ProductModel({
-            title,
-            description,
-            category,
-            subcategory,
-            subsubcategory,
-            price,
-            discountPercentage,
-            rating,
-            brand,
-            images,
-            reviews,
-            sellername,
-            quantity,
-              warrantyInformation,
-              shippingInformation,
-        });
+      // Check if sellerId is present (You can extract sellerId from the authenticated user's session or token)
+      if (!sellerId) {
+          return res.status(400).json({ message: 'Seller ID is required.' });
+      }
 
-        // Save the instance to the database
-        await newProduct.save();
+      // Create a new instance of ProductModel with the updated schema
+      const newProduct = new ProductModel({
+          title,
+          description,
+          category,
+          subcategory,
+          subsubcategory,
+          price,
+          discountPercentage,
+          rating,
+          brand,
+          images,
+          sellername,
+          quantity,
+          warrantyInformation,
+          shippingInformation,
+          sellerId  // Ensure the sellerId is saved with the product
+      });
 
-        // Send a success response
-        res.status(201).json({
-            message: 'New product document created successfully',
-            data: newProduct
-        });
-    } catch (error) {
-        console.error('Error creating product:', error);
-        res.status(500).json({
-            message: 'Internal server error',
-            error: error.message
-        });
-    }
+      // Save the instance to the database
+      await newProduct.save();
+
+      // Send a success response
+      res.status(201).json({
+          message: 'New product document created successfully',
+          data: newProduct
+      });
+  } catch (error) {
+      console.error('Error creating product:', error);
+      res.status(500).json({
+          message: 'Internal server error',
+          error: error.message
+      });
+  }
 });
+
 
 
 router.put("/", async (req, res) => {

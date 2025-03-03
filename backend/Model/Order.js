@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const OrderSchema = new mongoose.Schema({
-  tokenNumber:{type:Number,required:true},
+  tokenNumber: { type: Number, required: true },
   customer: {
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
@@ -18,6 +18,7 @@ const OrderSchema = new mongoose.Schema({
       title: { type: String, required: true },
       price: { type: Number, required: true },
       quantity: { type: Number, required: true },
+      sellerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true }, // Add sellerId
     }
   ],
   totalAmount: { type: Number, required: true },
@@ -32,7 +33,7 @@ const OrderSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
     required: true,
-  }
+  },
 });
 
 export const OrderModel = mongoose.model("Order", OrderSchema);
