@@ -227,40 +227,17 @@ const AdminDashboard = () => {
               <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                 Export
               </button>
-              <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-                Add New
-              </button>
+          
             </div>
           </div>
 
-          {/* Dashboard Stats */}
-          {activeSection === 'reports' && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              {[
-                { label: 'Total Revenue', value: '$12,345.67', change: '+8.2%', color: 'bg-green-100 text-green-800' },
-                { label: 'Orders', value: '1,234', change: '+12.5%', color: 'bg-blue-100 text-blue-800' },
-                { label: 'Customers', value: '5,678', change: '+3.7%', color: 'bg-purple-100 text-purple-800' },
-                { label: 'Avg. Order Value', value: '$87.65', change: '-2.1%', color: 'bg-red-100 text-red-800' }
-              ].map((stat, index) => (
-                <div key={index} className="bg-white rounded-lg shadow p-5">
-                  <dt className="text-sm font-medium text-gray-500 truncate">{stat.label}</dt>
-                  <dd className="mt-1 text-3xl font-semibold text-gray-900">{stat.value}</dd>
-                  <div className="mt-2">
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${stat.color}`}>
-                      {stat.change}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
 
           {/* Content Sections */}
           <div className="bg-white rounded-lg shadow">
             {activeSection === 'users' && <Users />}
             {activeSection === 'partner' && <Partner/>}
             {activeSection === 'orders' && <Orders />}
-            {activeSection === 'products' && <Login />}
+            {activeSection === 'products' && <Products />}
             {activeSection === 'reports' && <Login />}
           </div>
         </main>

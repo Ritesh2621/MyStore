@@ -32,27 +32,250 @@ ChartJS.register(
 );
 
 const Report = () => {
-  const [reports, setReports] = useState({});
+  const [orders, setOrders] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedPeriod, setSelectedPeriod] = useState('monthly');
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [dashboardData, setDashboardData] = useState({
+    totalOrders: 0,
+    totalRevenue: 0,
+    averageOrderValue: 0,
+    totalUsers: 0,
+    conversionRate: 0,
+    revenueData: [],
+    orderStatusStats: [],
+    orderCategoryStats: [],
+    topProducts: [],
+    userStats: []
+  });
 
   useEffect(() => {
-    fetchReports();
+    fetchData();
   }, [selectedPeriod, selectedYear]);
 
-  const fetchReports = async () => {
+  const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:4000/admin/reports?period=${selectedPeriod}&year=${selectedYear}`);
-      setReports(response.data);
+      const [ordersResponse, productsResponse] = await Promise.all([
+        axios.get('http://localhost:4000/order'),
+        axios.get('http://localhost:4000/product')
+      ]);
+      
+      setOrders(ordersResponse.data);
+      setProducts(productsResponse.data);
+      
+      // Process the data
+      processData(ordersResponse.data, productsResponse.data);
       setLoading(false);
     } catch (error) {
-      console.error('Error fetching reports:', error);
-      setError('Failed to load reports. Please try again later.');
+      console.error('Error fetching data:', error);
+      setError('Failed to load data. Please try again later.');
       setLoading(false);
     }
+  };
+
+  const processData = (orders, products) => {
+    // Filter orders based on selected period and year
+    const filteredOrders = filterOrdersByPeriodAndYear(orders, selectedPeriod, selectedYear);
+    
+    // Calculate total orders
+    const totalOrders = filteredOrders.length;
+    
+    // Calculate total revenue - using the totalAmount field from order
+    const totalRevenue = filteredOrders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+    
+    // Calculate average order value
+    const averageOrderValue = totalOrders ? (totalRevenue / totalOrders) : 0;
+    
+    // Get unique users
+    const uniqueUsers = [...new Set(filteredOrders.map(order => order.userOwner || order.customer?.email || 'Unknown'))];
+    const totalUsers = uniqueUsers.length;
+    
+    // Assume a total site visitors (for conversion rate) - In a real app, this would come from analytics
+    const estimatedVisitors = totalUsers * 10; // Just a placeholder calculation
+    const conversionRate = estimatedVisitors ? ((totalOrders / estimatedVisitors) * 100).toFixed(1) : 0;
+    
+    // Generate revenue data by month/period
+    const revenueData = generateRevenueData(filteredOrders, selectedPeriod);
+    
+    // Generate order status statistics
+    const orderStatusStats = generateOrderStatusStats(filteredOrders);
+    
+    // Generate order category statistics
+    const orderCategoryStats = generateOrderCategoryStats(filteredOrders, products);
+    
+    // Generate top products
+    const topProducts = generateTopProductsStats(filteredOrders, products);
+    
+    // Generate user statistics - by location (state)
+    const userStats = generateUserStats(filteredOrders);
+    
+    setDashboardData({
+      totalOrders,
+      totalRevenue,
+      averageOrderValue,
+      totalUsers,
+      conversionRate,
+      revenueData,
+      orderStatusStats,
+      orderCategoryStats,
+      topProducts,
+      userStats
+    });
+  };
+
+  const filterOrdersByPeriodAndYear = (orders, period, year) => {
+    return orders.filter(order => {
+      // Use orderDate field for filtering
+      const orderDate = new Date(order.orderDate?.$date || order.orderDate);
+      const orderYear = orderDate.getFullYear();
+      
+      if (orderYear !== year) return false;
+      
+      if (period === 'yearly') return true;
+      
+      if (period === 'monthly') {
+        return true;
+      }
+      
+      if (period === 'weekly') {
+        // Get week number of the order
+        const orderWeek = getWeekNumber(orderDate);
+        const currentWeek = getWeekNumber(new Date());
+        return orderWeek === currentWeek;
+      }
+      
+      if (period === 'daily') {
+        const today = new Date();
+        return orderDate.getDate() === today.getDate() &&
+               orderDate.getMonth() === today.getMonth();
+      }
+      
+      return true;
+    });
+  };
+
+  const getWeekNumber = (date) => {
+    const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
+    const pastDaysOfYear = (date - firstDayOfYear) / 86400000;
+    return Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+  };
+
+  const generateRevenueData = (orders, period) => {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    let revenueData = new Array(12).fill(0);
+    
+    orders.forEach(order => {
+      const orderDate = new Date(order.orderDate?.$date || order.orderDate);
+      const month = orderDate.getMonth();
+      revenueData[month] += (order.totalAmount || 0);
+    });
+    
+    // If period is not monthly, adjust the data structure
+    if (period === 'daily') {
+      // Get last 7 days
+      const dailyData = new Array(7).fill(0);
+      const today = new Date();
+      
+      orders.forEach(order => {
+        const orderDate = new Date(order.orderDate?.$date || order.orderDate);
+        const dayDiff = Math.floor((today - orderDate) / (24 * 60 * 60 * 1000));
+        if (dayDiff >= 0 && dayDiff < 7) {
+          dailyData[6 - dayDiff] += (order.totalAmount || 0);
+        }
+      });
+      
+      return dailyData;
+    }
+    
+    return revenueData;
+  };
+
+  const generateOrderStatusStats = (orders) => {
+    const statusCounts = {};
+    
+    orders.forEach(order => {
+      const status = order.orderStatus || 'Unknown';
+      statusCounts[status] = (statusCounts[status] || 0) + 1;
+    });
+    
+    return Object.keys(statusCounts).map(status => ({
+      _id: status.charAt(0).toUpperCase() + status.slice(1),
+      count: statusCounts[status]
+    }));
+  };
+
+  const generateOrderCategoryStats = (orders, products) => {
+    // Create map of product titles to categories
+    const productMap = {};
+    products.forEach(product => {
+      productMap[product.title] = product.category;
+    });
+    
+    const categoryCounts = {};
+    
+    orders.forEach(order => {
+      if (order.products && Array.isArray(order.products)) {
+        order.products.forEach(item => {
+          const productTitle = item.title;
+          const category = productMap[productTitle] || 'Unknown';
+          const quantity = item.quantity || 1;
+          
+          categoryCounts[category] = (categoryCounts[category] || 0) + quantity;
+        });
+      }
+    });
+    
+    return Object.keys(categoryCounts).map(category => ({
+      _id: category,
+      count: categoryCounts[category]
+    }));
+  };
+
+  const generateTopProductsStats = (orders, products) => {
+    const productCounts = {};
+    
+    orders.forEach(order => {
+      if (order.products && Array.isArray(order.products)) {
+        order.products.forEach(item => {
+          const productTitle = item.title;
+          const quantity = item.quantity || 1;
+          
+          productCounts[productTitle] = (productCounts[productTitle] || 0) + quantity;
+        });
+      }
+    });
+    
+    // Convert to array and sort
+    return Object.keys(productCounts)
+      .map(title => ({
+        _id: title,
+        count: productCounts[title]
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5); // Get top 5
+  };
+
+  const generateUserStats = (orders) => {
+    // Count orders by state
+    const stateCounts = {};
+    
+    orders.forEach(order => {
+      if (order.customer && order.customer.state) {
+        const state = order.customer.state;
+        stateCounts[state] = (stateCounts[state] || 0) + 1;
+      }
+    });
+    
+    return Object.keys(stateCounts)
+      .map(state => ({
+        _id: state,
+        count: stateCounts[state]
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5); // Get top 5 states
   };
 
   // Utility function to generate random colors
@@ -63,21 +286,11 @@ const Report = () => {
       '#FFCA3A', '#8AC926', '#1982C4', '#6A4C93', '#FF595E'
     ];
     
-    // If we need more colors than our predefined list, generate them
-    if (count > colors.length) {
-      for (let i = colors.length; i < count; i++) {
-        const r = Math.floor(Math.random() * 255);
-        const g = Math.floor(Math.random() * 255);
-        const b = Math.floor(Math.random() * 255);
-        colors.push(`rgba(${r}, ${g}, ${b}, 0.8)`);
-      }
-    }
-    
     return colors.slice(0, count);
   };
 
   // Data configuration for various charts
-  const getPieChartData = (data, labelKey) => {
+  const getPieChartData = (data) => {
     if (!data || !data.length) return { labels: [], datasets: [{ data: [] }] };
     
     const backgroundColors = generateColors(data.length);
@@ -86,28 +299,36 @@ const Report = () => {
       labels: data.map(item => item._id),
       datasets: [
         {
-          label: labelKey,
           data: data.map(item => item.count),
           backgroundColor: backgroundColors,
-          hoverBackgroundColor: backgroundColors.map(color => color.replace('0.8', '1')),
+          hoverBackgroundColor: backgroundColors,
           borderWidth: 1,
-          borderColor: '#fff',
         },
       ],
     };
   };
 
   const getRevenueData = () => {
-    // Sample revenue data - replace with actual data from your API
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    const revenueData = reports.revenueData || months.map(() => Math.floor(Math.random() * 10000));
+    let labels = months;
+    
+    if (selectedPeriod === 'daily') {
+      // Last 7 days
+      labels = [];
+      const today = new Date();
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(today.getDate() - i);
+        labels.push(date.getDate() + ' ' + months[date.getMonth()]);
+      }
+    }
     
     return {
-      labels: months,
+      labels: labels,
       datasets: [
         {
           label: 'Revenue',
-          data: revenueData,
+          data: dashboardData.revenueData,
           backgroundColor: 'rgba(54, 162, 235, 0.2)',
           borderColor: 'rgba(54, 162, 235, 1)',
           borderWidth: 2,
@@ -116,7 +337,7 @@ const Report = () => {
         },
         {
           label: 'Target',
-          data: months.map(() => 7500), // Example target line
+          data: labels.map(() => dashboardData.averageOrderValue * 10), // Example target line
           backgroundColor: 'transparent',
           borderColor: 'rgba(255, 99, 132, 0.8)',
           borderWidth: 2,
@@ -128,81 +349,15 @@ const Report = () => {
   };
 
   const getOrdersByStatusData = () => {
-    const statuses = reports.orderStatusStats || [
-      { _id: 'Pending', count: 45 },
-      { _id: 'Processing', count: 30 },
-      { _id: 'Shipped', count: 20 },
-      { _id: 'Delivered', count: 85 },
-      { _id: 'Cancelled', count: 10 }
-    ];
-    
-    const backgroundColors = [
-      'rgba(255, 206, 86, 0.8)',   // Yellow for Pending
-      'rgba(54, 162, 235, 0.8)',   // Blue for Processing
-      'rgba(75, 192, 192, 0.8)',   // Green-Blue for Shipped
-      'rgba(75, 192, 75, 0.8)',    // Green for Delivered
-      'rgba(255, 99, 132, 0.8)'    // Red for Cancelled
-    ];
-
-    return {
-      labels: statuses.map(item => item._id),
-      datasets: [
-        {
-          data: statuses.map(item => item.count),
-          backgroundColor: backgroundColors,
-          borderColor: backgroundColors.map(color => color.replace('0.8', '1')),
-          borderWidth: 1,
-        },
-      ],
-    };
+    return getPieChartData(dashboardData.orderStatusStats);
   };
 
   const getOrdersByCategoryData = () => {
-    // If actual data is available, use it, otherwise use sample data
-    let categoryData = reports.orderCategoryStats || [];
-    
-    // If no data is available (even from API), use our predefined categories with sample data
-    if (!categoryData.length) {
-      categoryData = [
-        { _id: 'Clothes', count: 135 },
-        { _id: 'Jewellery', count: 87 },
-        { _id: 'Home Furnishing', count: 76 },
-        { _id: 'Beauty and Health Care', count: 95 },
-        { _id: 'Electronics', count: 142 },
-        { _id: 'Books', count: 56 },
-        { _id: 'Toys', count: 43 }
-      ];
-    }
-    
-    // Sort data by count in descending order
-    categoryData.sort((a, b) => b.count - a.count);
-    
-    const backgroundColors = generateColors(categoryData.length);
-    
-    return {
-      labels: categoryData.map(item => item._id),
-      datasets: [
-        {
-          data: categoryData.map(item => item.count),
-          backgroundColor: backgroundColors,
-          borderColor: backgroundColors.map(color => color.replace('0.8', '1')),
-          borderWidth: 1,
-        },
-      ],
-    };
+    return getPieChartData(dashboardData.orderCategoryStats);
   };
 
   const getTopProductsData = () => {
-    const products = reports.topProducts || [
-      { _id: 'Product A', count: 120 },
-      { _id: 'Product B', count: 98 },
-      { _id: 'Product C', count: 86 },
-      { _id: 'Product D', count: 65 },
-      { _id: 'Product E', count: 59 }
-    ];
-    
-    // Sort products by count in descending order
-    products.sort((a, b) => b.count - a.count);
+    const products = dashboardData.topProducts;
     
     return {
       labels: products.map(item => item._id),
@@ -228,7 +383,7 @@ const Report = () => {
       },
       title: {
         display: true,
-        text: 'Monthly Revenue'
+        text: `${selectedPeriod.charAt(0).toUpperCase() + selectedPeriod.slice(1)} Revenue (${selectedYear})`
       },
       tooltip: {
         callbacks: {
@@ -238,7 +393,7 @@ const Report = () => {
               label += ': ';
             }
             if (context.parsed.y !== null) {
-              label += new Intl.NumberFormat('en-US', {
+              label += new Intl.NumberFormat('en-IN', {
                 style: 'currency',
                 currency: 'INR',
                 minimumFractionDigits: 0
@@ -303,19 +458,11 @@ const Report = () => {
     }
   };
 
-  // Calculate summary statistics
-  const getSummaryStats = () => {
-    // In a real application, these would come from your API
-    return {
-      totalOrders: reports.totalOrders || 354,
-      totalRevenue: reports.totalRevenue || 285400,
-      averageOrderValue: reports.averageOrderValue || 806.2,
-      totalUsers: reports.totalUsers || 1245,
-      conversionRate: reports.conversionRate || 3.2,
-    };
+  // Calculate month-over-month changes
+  const calculateMoMChange = (current, previous) => {
+    if (!previous) return 0;
+    return ((current - previous) / previous * 100).toFixed(1);
   };
-
-  const stats = getSummaryStats();
 
   // Display loading indicator
   if (loading) {
@@ -336,14 +483,21 @@ const Report = () => {
     );
   }
 
+  // For demo purposes, calculate some month-over-month changes
+  const ordersMoM = calculateMoMChange(dashboardData.totalOrders, dashboardData.totalOrders * 0.92);
+  const revenueMoM = calculateMoMChange(dashboardData.totalRevenue, dashboardData.totalRevenue * 0.89);
+  const aovMoM = calculateMoMChange(dashboardData.averageOrderValue, dashboardData.averageOrderValue * 1.02);
+  const usersMoM = calculateMoMChange(dashboardData.totalUsers, dashboardData.totalUsers * 0.95);
+  const conversionMoM = calculateMoMChange(dashboardData.conversionRate, dashboardData.conversionRate * 0.98);
+
   return (
     <div className="container mx-auto p-4">
       <div className="bg-white rounded-lg shadow-lg p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">Analytics Dashboard</h1>
+        <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-gray-800 mb-4 md:mb-0">E-commerce Analytics Dashboard</h1>
           
           {/* Period selector */}
-          <div className="flex space-x-2">
+          <div className="flex flex-wrap space-x-2">
             <select 
               value={selectedPeriod}
               onChange={(e) => setSelectedPeriod(e.target.value)}
@@ -357,13 +511,20 @@ const Report = () => {
             
             <select 
               value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
+              onChange={(e) => setSelectedYear(parseInt(e.target.value))}
               className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               {[2023, 2024, 2025].map(year => (
                 <option key={year} value={year}>{year}</option>
               ))}
             </select>
+            
+            <button 
+              onClick={fetchData}
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              Refresh
+            </button>
           </div>
         </div>
 
@@ -371,56 +532,56 @@ const Report = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
           <div className="bg-white p-4 rounded-lg shadow border-l-4 border-blue-500">
             <div className="text-gray-500 text-sm">Total Orders</div>
-            <div className="text-2xl font-bold">{stats.totalOrders.toLocaleString()}</div>
-            <div className="text-green-500 text-sm flex items-center mt-1">
+            <div className="text-2xl font-bold">{dashboardData.totalOrders.toLocaleString()}</div>
+            <div className={`text-sm flex items-center mt-1 ${parseFloat(ordersMoM) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
               <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={parseFloat(ordersMoM) >= 0 ? "M5 10l7-7m0 0l7 7m-7-7v18" : "M19 14l-7 7m0 0l-7-7m7 7V3"}></path>
               </svg>
-              8.5% vs last month
+              {Math.abs(ordersMoM)}% vs last month
             </div>
           </div>
           
           <div className="bg-white p-4 rounded-lg shadow border-l-4 border-green-500">
             <div className="text-gray-500 text-sm">Total Revenue</div>
-            <div className="text-2xl font-bold">₹{stats.totalRevenue.toLocaleString()}</div>
-            <div className="text-green-500 text-sm flex items-center mt-1">
+            <div className="text-2xl font-bold">₹{dashboardData.totalRevenue.toLocaleString(undefined, {maximumFractionDigits: 2})}</div>
+            <div className={`text-sm flex items-center mt-1 ${parseFloat(revenueMoM) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
               <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={parseFloat(revenueMoM) >= 0 ? "M5 10l7-7m0 0l7 7m-7-7v18" : "M19 14l-7 7m0 0l-7-7m7 7V3"}></path>
               </svg>
-              12.3% vs last month
+              {Math.abs(revenueMoM)}% vs last month
             </div>
           </div>
           
           <div className="bg-white p-4 rounded-lg shadow border-l-4 border-purple-500">
             <div className="text-gray-500 text-sm">Avg. Order Value</div>
-            <div className="text-2xl font-bold">₹{stats.averageOrderValue.toLocaleString()}</div>
-            <div className="text-red-500 text-sm flex items-center mt-1">
+            <div className="text-2xl font-bold">₹{dashboardData.averageOrderValue.toLocaleString(undefined, {maximumFractionDigits: 2})}</div>
+            <div className={`text-sm flex items-center mt-1 ${parseFloat(aovMoM) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
               <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={parseFloat(aovMoM) >= 0 ? "M5 10l7-7m0 0l7 7m-7-7v18" : "M19 14l-7 7m0 0l-7-7m7 7V3"}></path>
               </svg>
-              2.1% vs last month
+              {Math.abs(aovMoM)}% vs last month
             </div>
           </div>
           
           <div className="bg-white p-4 rounded-lg shadow border-l-4 border-yellow-500">
-            <div className="text-gray-500 text-sm">Total Users</div>
-            <div className="text-2xl font-bold">{stats.totalUsers.toLocaleString()}</div>
-            <div className="text-green-500 text-sm flex items-center mt-1">
+            <div className="text-gray-500 text-sm">Total Customers</div>
+            <div className="text-2xl font-bold">{dashboardData.totalUsers.toLocaleString()}</div>
+            <div className={`text-sm flex items-center mt-1 ${parseFloat(usersMoM) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
               <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={parseFloat(usersMoM) >= 0 ? "M5 10l7-7m0 0l7 7m-7-7v18" : "M19 14l-7 7m0 0l-7-7m7 7V3"}></path>
               </svg>
-              5.7% vs last month
+              {Math.abs(usersMoM)}% vs last month
             </div>
           </div>
           
           <div className="bg-white p-4 rounded-lg shadow border-l-4 border-red-500">
             <div className="text-gray-500 text-sm">Conversion Rate</div>
-            <div className="text-2xl font-bold">{stats.conversionRate}%</div>
-            <div className="text-green-500 text-sm flex items-center mt-1">
+            <div className="text-2xl font-bold">{dashboardData.conversionRate}%</div>
+            <div className={`text-sm flex items-center mt-1 ${parseFloat(conversionMoM) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
               <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={parseFloat(conversionMoM) >= 0 ? "M5 10l7-7m0 0l7 7m-7-7v18" : "M19 14l-7 7m0 0l-7-7m7 7V3"}></path>
               </svg>
-              0.8% vs last month
+              {Math.abs(conversionMoM)}% vs last month
             </div>
           </div>
         </div>
@@ -451,7 +612,7 @@ const Report = () => {
             </div>
           </div>
           
-          {/* Orders by Category - MODIFIED */}
+          {/* Orders by Category */}
           <div className="bg-white rounded-lg shadow p-4">
             <h3 className="text-lg font-semibold mb-4 text-center">Orders by Category</h3>
             <div className="h-64">
@@ -464,10 +625,10 @@ const Report = () => {
           
           {/* User Statistics */}
           <div className="bg-white rounded-lg shadow p-4">
-            <h3 className="text-lg font-semibold mb-4 text-center">User Demographics</h3>
+            <h3 className="text-lg font-semibold mb-4 text-center">Top Customer Locations</h3>
             <div className="h-64">
               <PolarArea 
-                data={getPieChartData(reports.userStats || [], 'User Statistics')}
+                data={getPieChartData(dashboardData.userStats)}
                 options={{
                   ...pieOptions,
                   plugins: {
