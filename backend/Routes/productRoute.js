@@ -24,6 +24,9 @@ router.get("/:id",async(req,res)=>{
     }
 })
 
+
+
+
 router.post('/product', async (req, res) => {
   try {
       const { title, description, category, subcategory, subsubcategory, price, discountPercentage, rating, brand, images, sellername, quantity, warrantyInformation, shippingInformation, sellerId } = req.body;

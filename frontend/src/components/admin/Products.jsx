@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import AdminAddProduct from './AdminAddProduct';
+import { Link } from 'react-router-dom';
 
 const Products = () => {
     const [products, setProducts] = useState([]);
@@ -40,6 +42,11 @@ const Products = () => {
                 alert('Failed to delete product. Please try again.');
             }
         }
+    };
+
+    const handleEditProduct = (productId) => {
+        // Navigate to edit page or open edit modal with the product ID
+        window.location.href = `/admin/product/edit/${productId}`;
     };
 
     const viewProductDetails = (product) => {
@@ -93,9 +100,9 @@ const Products = () => {
                     <>
                         <div className="flex justify-between mb-4">
                             <h2 className="text-xl font-semibold">Products List ({products.length} total)</h2>
-                            <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
+                            <Link to='/admin/add' className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">
                                 Add New Product
-                            </button>
+                            </Link>
                         </div>
                         
                         <div className="overflow-x-auto">
@@ -185,17 +192,12 @@ const Products = () => {
                                                 >
                                                     View
                                                 </button>
-                                                <button
-                                                    className="text-indigo-600 hover:text-indigo-900 mr-2"
+                                                {/* <button
+                                                    onClick={() => handleEditProduct(product._id)}
+                                                    className="text-green-600 hover:text-green-900 mr-2"
                                                 >
                                                     Edit
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDeleteProduct(product._id)}
-                                                    className="text-red-600 hover:text-red-900"
-                                                >
-                                                    Delete
-                                                </button>
+                                                </button> */}
                                             </td>
                                         </tr>
                                     ))}
@@ -257,7 +259,10 @@ const Products = () => {
                                 Back to Products
                             </button>
                             <div className="flex space-x-2">
-                                <button className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded">
+                                <button 
+                                    onClick={() => handleEditProduct(selectedProduct._id)}
+                                    className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded"
+                                >
                                     Edit Product
                                 </button>
                                 <button 

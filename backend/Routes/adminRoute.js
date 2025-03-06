@@ -177,6 +177,67 @@ router.post('/add-vendor', async (req, res) => {
 });
 
 
+// Edit a product
+router.put('/edit/:id', async (req, res) => {
+  try {
+    // Extract the product ID from the URL parameter
+    const productId = req.params.id;
+
+    // Extract the fields to update from the request body
+    const {
+      title,
+      description,
+      category,
+      subcategory,
+      subsubcategory,
+      price,
+      discountPercentage,
+      rating,
+      brand,
+      images,
+      sellername,
+      quantity,
+      warrantyInformation,
+      shippingInformation,
+    } = req.body;
+
+    // Find the product by ID and update the necessary fields
+    const updatedProduct = await ProductModel.findByIdAndUpdate(
+      productId,
+      {
+        title,
+        description,
+        category,
+        subcategory,
+        subsubcategory,
+        price,
+        discountPercentage,
+        rating,
+        brand,
+        images,
+        sellername,
+        quantity,
+        warrantyInformation,
+        shippingInformation,
+      },
+      { new: true } // `new: true` ensures the response contains the updated document
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    // Send the updated product back in the response
+    res.status(200).json({
+      message: 'Product updated successfully',
+      data: updatedProduct,
+    });
+  } catch (error) {
+    console.error('Error updating product:', error.message);
+    res.status(500).json({ message: 'Error updating product', error: error.message });
+  }
+});
+
 
 router.put("/users/:id",  async (req, res) => {
     try {

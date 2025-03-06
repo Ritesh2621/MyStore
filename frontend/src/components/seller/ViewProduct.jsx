@@ -470,7 +470,7 @@ const ViewProduct = () => {
         
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
           <p className="text-sm font-medium text-gray-500">Total Revenue</p>
-          <p className="text-3xl font-bold text-gray-800">${stats.totalRevenue.toFixed(2)}</p>
+          <p className="text-3xl font-bold text-gray-800">₹ {stats.totalRevenue.toFixed(2)}</p>
         </div>
         
         <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
@@ -560,7 +560,7 @@ const ViewProduct = () => {
                     {new Date(order.orderDate).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    ${order.totalAmount.toFixed(2)}
+                  ₹ {order.totalAmount.toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${

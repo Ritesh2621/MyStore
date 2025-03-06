@@ -61,7 +61,7 @@ const CheckoutPage = () => {
           title: item.title,
           price: item.price,
           quantity: item.quantity,
-          sellerId: localStorage.getItem('userId'),
+          sellerId:item.sellerId ? item.sellerId : '67a5b37cddcc3105ff47f3cd',
         })),
         totalAmount: total,
         orderStatus: 'pending', // Initial order status

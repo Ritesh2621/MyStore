@@ -238,7 +238,7 @@ const AdminDashboard = () => {
             {activeSection === 'partner' && <Partner/>}
             {activeSection === 'orders' && <Orders />}
             {activeSection === 'products' && <Products />}
-            {activeSection === 'reports' && <Login />}
+            {activeSection === 'reports' && <Report />}
           </div>
         </main>
       </div>

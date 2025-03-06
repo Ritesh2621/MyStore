@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {Link} from 'react-router-dom'
 
 const AddProduct = () => {
   const [newProduct, setNewProduct] = useState({
@@ -61,6 +62,11 @@ const AddProduct = () => {
       images: newImages
     });
   };
+
+  const handleEditProduct = (productId) => {
+    // Navigate to edit page or open edit modal with the product ID
+    window.location.href = `/admin/product/edit/${productId}`;
+};
 
   const addImageField = () => {
     setNewProduct({
@@ -437,9 +443,9 @@ const AddProduct = () => {
                 <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Status
                 </th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                {/* <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
-                </th>
+                </th> */}
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -497,14 +503,14 @@ const AddProduct = () => {
                         Active
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button className="text-blue-600 hover:text-blue-900 mr-3">
+                    {/* <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <button onClick={handleEditProduct} className="text-blue-600 hover:text-blue-900 mr-3">
                         Edit
                       </button>
                       <button className="text-red-600 hover:text-red-900">
                         Delete
                       </button>
-                    </td>
+                    </td> */}
                   </tr>
                 ))
               )}

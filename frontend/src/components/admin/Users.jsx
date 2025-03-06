@@ -220,10 +220,10 @@ const Users = () => {
             
             <button 
               onClick={exportUserData} 
-              className="p-2 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="p-2 border bg-green-400 border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
               title="Export"
             >
-              <DownloadIcon size={16} className="text-gray-600" />
+              <DownloadIcon size={16} className="text-black font-extrabold" />
             </button>
             
             <button 

@@ -588,14 +588,14 @@ const Report = () => {
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-          {/* Revenue Over Time */}
+       
           <div className="bg-white rounded-lg shadow p-4">
             <div className="h-80">
               <Line data={getRevenueData()} options={lineOptions} />
             </div>
           </div>
           
-          {/* Top Products */}
+         
           <div className="bg-white rounded-lg shadow p-4">
             <div className="h-80">
               <Bar data={getTopProductsData()} options={barOptions} />
@@ -604,7 +604,7 @@ const Report = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Orders by Status */}
+     
           <div className="bg-white rounded-lg shadow p-4">
             <h3 className="text-lg font-semibold mb-4 text-center">Orders by Status</h3>
             <div className="h-64">
@@ -612,7 +612,7 @@ const Report = () => {
             </div>
           </div>
           
-          {/* Orders by Category */}
+       
           <div className="bg-white rounded-lg shadow p-4">
             <h3 className="text-lg font-semibold mb-4 text-center">Orders by Category</h3>
             <div className="h-64">
@@ -623,7 +623,7 @@ const Report = () => {
             </div>
           </div>
           
-          {/* User Statistics */}
+
           <div className="bg-white rounded-lg shadow p-4">
             <h3 className="text-lg font-semibold mb-4 text-center">Top Customer Locations</h3>
             <div className="h-64">
