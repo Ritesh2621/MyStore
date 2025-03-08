@@ -72,8 +72,10 @@ const MenuBar = () => {
 
   const handleSubsubcategoryClick = (subsubcategory) => {
     setLoading(true);
-    navigate(`/products?subsubcategory=${subsubcategory}`); // Navigate with subsubcategory as a query parameter
+    // Pass the subsubcategory as a state to ProductPage
+    navigate("/", { state: { subsubcategory } });
   };
+  
 
   return (
     <div>

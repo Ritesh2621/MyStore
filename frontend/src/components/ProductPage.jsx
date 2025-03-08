@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import { MdCurrencyRupee } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
 
 const ProductPage = ({
   selectedCategories,
@@ -12,6 +12,8 @@ const ProductPage = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const location = useLocation();
+  const selectedSubsubcategory = location.state?.subsubcategory; // Get the subsubcategory from the state
 
   const filterProducts = (product) => {
     // Filter by Category
@@ -43,6 +45,11 @@ const ProductPage = ({
           const discountValue = parseInt(discount.split("%")[0]);
           return product.discountPercentage >= discountValue;
         })) {
+      return false;
+    }
+
+    // Filter by Subsubcategory (if provided)
+    if (selectedSubsubcategory && product.subsubcategory !== selectedSubsubcategory) {
       return false;
     }
 
