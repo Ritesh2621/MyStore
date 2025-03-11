@@ -75,13 +75,23 @@ const MenuBar = () => {
     // Pass the subsubcategory as a state to ProductPage
     navigate("/", { state: { subsubcategory } });
   };
-  
+
+  const handleAllCategoriesClick = () => {
+    // Navigate to the ProductPage without any filters
+    navigate("/", { state: { subsubcategory: null } });
+  };
 
   return (
     <div>
       <nav className="bg-white border-b shadow-sm" role="navigation" aria-label="Main navigation">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-start space-x-6 h-14" ref={menuRef}>
+            <button
+              className="inline-flex items-center px-4 py-2 text-sm font-medium transition duration-200 rounded-md h-14 text-gray-700 hover:text-blue-600"
+              onClick={handleAllCategoriesClick}
+            >
+              All Categories
+            </button>
             {categories.map((category, index) => (
               <div
                 key={index}
