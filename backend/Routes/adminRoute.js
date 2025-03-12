@@ -9,7 +9,7 @@ import cors from "cors";
 
 dotenv.config();
 const router = express.Router();
-router.use(cors()); // Allow CORS
+
 
 // Middleware to verify admin
 const verifyAdmin = (req, res, next) => {
@@ -129,6 +129,14 @@ router.get("/partners", async (req, res) => {
     try {
         const vendors = await UserModel.find({ role: "partner" });
         res.status(200).json(vendors);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+router.get("/sellers", async (req, res) => {
+    try {
+        const sellers = await UserModel.find({ role: "seller" });
+        res.status(200).json(sellers);
     } catch (error) {
         res.status(500).json({ message: "Server error", error: error.message });
     }

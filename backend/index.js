@@ -18,10 +18,14 @@ import { SupplierRouter } from "./Routes/supplierRoute.js";
 
 
 app.use(express.json());
-app.use(cors({
-  origin: "http://localhost:3000", // Frontend URL
-  credentials: true, // Allow cookies (access token) to be sent with the request
-}));
+const corsOptions = {
+  origin: 'http://localhost:3000', // Only allow frontend origin
+  credentials: true,               // Allow cookies
+  allowedHeaders: ['Content-Type', 'Authorization'], // Ensure headers are allowed
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Define allowed methods
+};
+app.use(cors(corsOptions));
+
 app.use(cookieParser());
 
 
