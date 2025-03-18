@@ -3,6 +3,8 @@ import CategorySidebar from '../components/CategorySidebar';
 import ProductPage from '../components/ProductPage';
 import axios from 'axios';
 import MenuBar from '../components/MenuBar';
+import CategorySlider from '../components/CategorySlider';
+import BannerSlider from '../components/BannerSlider';
 
 const Home = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -44,6 +46,8 @@ const Home = () => {
   return (
     <>
       <MenuBar setSelectedSubsubcategory={setSelectedSubsubcategory} />
+      <CategorySlider/>
+      <BannerSlider/>
       <div className="flex">
         <CategorySidebar
           selectedCategories={selectedCategories}
