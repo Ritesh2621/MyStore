@@ -9,6 +9,7 @@ import Partner from './Partner';
 import { 
   Users as UsersIcon, 
   Package as PackageIcon, 
+  Store as SellerIcon,
   ShoppingCart as OrdersIcon, 
   PieChart as ReportsIcon, 
   Handshake as PartnersIcon,
@@ -18,6 +19,7 @@ import {
   Menu as MenuIcon,
   X as CloseIcon
 } from 'lucide-react';
+import Seller from './Seller';
 
 const AdminDashboard = () => {
   const [activeSection, setActiveSection] = useState('users');
@@ -37,6 +39,7 @@ const AdminDashboard = () => {
   const navItems = [
     { id: 'users', label: 'Users', icon: <UsersIcon size={18} /> },
     { id: 'partner', label: 'Partners', icon: <PartnersIcon size={18} /> },
+    { id: 'seller', label: 'Sellers', icon: <SellerIcon size={18} /> },
     { id: 'orders', label: 'Orders', icon: <OrdersIcon size={18} /> },
     { id: 'products', label: 'Products', icon: <PackageIcon size={18} /> },
     { id: 'reports', label: 'Reports', icon: <ReportsIcon size={18} /> }
@@ -236,6 +239,7 @@ const AdminDashboard = () => {
           <div className="bg-white rounded-lg shadow">
             {activeSection === 'users' && <Users />}
             {activeSection === 'partner' && <Partner/>}
+            {activeSection === 'seller' && <Seller/>}
             {activeSection === 'orders' && <Orders />}
             {activeSection === 'products' && <Products />}
             {activeSection === 'reports' && <Report />}

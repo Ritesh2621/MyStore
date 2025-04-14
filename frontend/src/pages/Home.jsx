@@ -5,7 +5,10 @@ import axios from 'axios';
 import MenuBar from '../components/MenuBar';
 import CategorySlider from '../components/CategorySlider';
 import BannerSlider from '../components/BannerSlider';
+<<<<<<< HEAD
 // import MoreAbout from '../components/MoreAbout';
+=======
+>>>>>>> 7ea62d898d3e0e768f7cc3be729e3316ee0f912c
 
 const Home = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);

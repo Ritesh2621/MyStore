@@ -211,9 +211,7 @@ const ViewProduct = () => {
                 <div>
                   <h4 className="text-sm font-medium text-gray-500">Actions</h4>
                   <div className="mt-2 space-y-2">
-                    <button className="w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">
-                      Update Order Status
-                    </button>
+                  
                     <button className="w-full py-2 bg-white border border-gray-300 text-gray-700 rounded hover:bg-gray-50 transition">
                       Contact Customer
                     </button>

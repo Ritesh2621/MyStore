@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+<<<<<<< HEAD
 import { useLocation } from "react-router-dom";
 import Img1 from "../assets/Img1.jpg"
 // import Img2 from "../assets/Img2.jpg"
@@ -14,6 +15,11 @@ const BannerSlider = ({ title, banners = [], isFiltered }) => {
     // Check if filtering is applied based on the location state
     const isFilterApplied = location.state && location.state.subsubcategory !== null && location.state.subsubcategory !== undefined;
 
+=======
+import Img1 from "../assets/Img1.jpg"
+
+const BannerSlider = ({ title, banners = [] }) => {
+>>>>>>> 7ea62d898d3e0e768f7cc3be729e3316ee0f912c
   // Default to empty array if banners is undefined
   const slides = Array.isArray(banners) ? banners : [];
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -31,9 +37,12 @@ const BannerSlider = ({ title, banners = [], isFiltered }) => {
   const goToSlide = (index) => {
     setCurrentSlide(index);
   };
+<<<<<<< HEAD
   if (!isHomepage || isFiltered || isFilterApplied) {
     return null; // Hide the banner on non-homepage routes or when filtered
   }
+=======
+>>>>>>> 7ea62d898d3e0e768f7cc3be729e3316ee0f912c
 
   // If no slides, return a placeholder
   if (slides.length === 0) {
@@ -54,7 +63,11 @@ const BannerSlider = ({ title, banners = [], isFiltered }) => {
       <div className="relative overflow-hidden rounded-xl shadow-lg">
         <div
           className="flex transition-transform duration-500 ease-in-out"
+<<<<<<< HEAD
           style={{ transform: `translateX(-${currentSlide * 100}%) `}}
+=======
+          style={{ transform: `translateX(-${currentSlide * 100}%)` }}
+>>>>>>> 7ea62d898d3e0e768f7cc3be729e3316ee0f912c
         >
           {slides.map((banner, index) => (
             <div key={banner.key || index} className="min-w-full">
@@ -202,7 +215,11 @@ const EcommerceBannerSliders = () => {
       heading: "Premium Fashion Trends",
       discountTag: "60% off",
       bgColor: "bg-gray-100",
+<<<<<<< HEAD
       illustration: Img3,
+=======
+      illustration: Img1,
+>>>>>>> 7ea62d898d3e0e768f7cc3be729e3316ee0f912c
       rightImage: sampleImages.fashionRight
     }),
     createBanner({
@@ -210,7 +227,11 @@ const EcommerceBannerSliders = () => {
       heading: "Upgrade Your Living Space",
       discountTag: "50% off",
       bgColor: "bg-blue-50",
+<<<<<<< HEAD
       illustration: Img4,
+=======
+      illustration: Img1,
+>>>>>>> 7ea62d898d3e0e768f7cc3be729e3316ee0f912c
       rightImage: sampleImages.homeRight
     })
   ];
@@ -221,7 +242,11 @@ const EcommerceBannerSliders = () => {
       heading: "Mega Discounts on Electronics",
       discountTag: "80% off",
       bgColor: "bg-red-50",
+<<<<<<< HEAD
       illustration: Img7,
+=======
+      illustration: Img1,
+>>>>>>> 7ea62d898d3e0e768f7cc3be729e3316ee0f912c
       rightImage: sampleImages.electronicsRight
     }),
     createBanner({
@@ -229,7 +254,11 @@ const EcommerceBannerSliders = () => {
       heading: "Flash Sale on Apparel",
       discountTag: "Buy 1 Get 1",
       bgColor: "bg-yellow-50",
+<<<<<<< HEAD
       illustration: Img3,
+=======
+      illustration: Img1,
+>>>>>>> 7ea62d898d3e0e768f7cc3be729e3316ee0f912c
       rightImage: sampleImages.apparelRight
     }),
     createBanner({
@@ -248,7 +277,11 @@ const EcommerceBannerSliders = () => {
       heading: "Exclusive Gifts for Loved Ones",
       discountTag: "40% off",
       bgColor: "bg-purple-50",
+<<<<<<< HEAD
       illustration: Img3,
+=======
+      illustration: Img1,
+>>>>>>> 7ea62d898d3e0e768f7cc3be729e3316ee0f912c
       rightImage: sampleImages.giftsRight
     }),
     createBanner({
@@ -270,6 +303,7 @@ const EcommerceBannerSliders = () => {
   ];
 
   return (
+<<<<<<< HEAD
     <div className="flex justify-center items-center mx-auto px-4 py-8">
   <div className="w-full max-w-7xl">
     <BannerSlider title="Top Products" banners={topProductsBanners} />
@@ -278,6 +312,13 @@ const EcommerceBannerSliders = () => {
   </div>
 </div>
 
+=======
+    <div className="container mx-auto px-4 py-8">
+      <BannerSlider title="Top Products" banners={topProductsBanners} />
+      <BannerSlider title="Discount Deals" banners={discountBanners} />
+      <BannerSlider title="Amazing Offers" banners={amazingOffersBanners} />
+    </div>
+>>>>>>> 7ea62d898d3e0e768f7cc3be729e3316ee0f912c
   );
 };
 

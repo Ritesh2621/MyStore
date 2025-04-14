@@ -55,7 +55,7 @@ const CategorySidebar = ({
   };
 
   return (
-    <div className="w-64 p-6 bg-white shadow-lg rounded-lg">
+    <div className="w-64 p-6 bg-white shadow-lg rounded-lg ">
       {/* Category Section */}
       <div className="mb-6">
         <h2

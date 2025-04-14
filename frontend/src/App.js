@@ -10,6 +10,7 @@ import CheckoutPage from "./components/CheckoutPage";
 import MyOrdersPage from "./components/MyOrdersPage";
 import ScrollToTop from "./components/ScrollToTop";
 import Login from "./components/Login";
+import Footer from "./components/Footer";
 import Register from "./components/Register";
 import CustomerProfile from "./components/CustomerProfile";
 import Wishlist from "./components/Wishlist";
@@ -56,10 +57,14 @@ function App() {
         <Route path="/admin/add" element={<AdminAddProduct />} />
         <Route path="/" element={<MoreAbout />} />
       </Routes>
+<<<<<<< HEAD
       <Footer/>
       <MoreAbout/>
 
     
+=======
+    <Footer/>
+>>>>>>> 7ea62d898d3e0e768f7cc3be729e3316ee0f912c
       </ScrollToTop>
     </Router>
   );

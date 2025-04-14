@@ -3,10 +3,17 @@ import React from 'react';
 const CategorySlider = () => {
   return (
     <div className="relative w-full h-full bg-white overflow-hidden p-6 rounded-lg">
+<<<<<<< HEAD
       {/* Background decorative circles - kept but opacity reduced */}
       <div className="absolute top-0 left-0 w-20 h-20 rounded-full bg-pink-400 opacity-20 -translate-x-1/2 -translate-y-1/2"></div>
       <div className="absolute top-0 right-1/3 w-32 h-32 rounded-full bg-blue-600 opacity-20"></div>
       <div className="absolute bottom-0 right-0 w-40 h-40 rounded-full bg-orange-400 opacity-20 translate-x-1/3 translate-y-1/3"></div>
+=======
+      {/* Background decorative circles */}
+      <div className="absolute top-0 left-0 w-20 h-20 rounded-full bg-pink-400 opacity-80 -translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute top-0 right-1/3 w-32 h-32 rounded-full bg-blue-600 opacity-80"></div>
+      <div className="absolute bottom-0 right-0 w-40 h-40 rounded-full bg-orange-400 opacity-80 translate-x-1/3 translate-y-1/3"></div>
+>>>>>>> 7ea62d898d3e0e768f7cc3be729e3316ee0f912c
       
       <div className="flex flex-col md:flex-row justify-between items-center relative z-10">
         {/* Left side content */}
@@ -59,12 +66,21 @@ const CategorySlider = () => {
                 {/* Store icon with awning */}
                 <div className="w-full bg-white rounded-t-lg flex justify-center py-2">
                   <div className="relative w-20 h-6">
+<<<<<<< HEAD
                     <div className="w-full h-1 bg-blue-400"></div>
                     <div className="absolute top-1 left-0 right-0 h-5 flex justify-between">
                       <div className="w-4 h-5 bg-blue-400 rounded-b-sm"></div>
                       <div className="w-4 h-5 bg-blue-400 rounded-b-sm"></div>
                       <div className="w-4 h-5 bg-blue-400 rounded-b-sm"></div>
                       <div className="w-4 h-5 bg-blue-400 rounded-b-sm"></div>
+=======
+                    <div className="w-full h-1 bg-pink-400"></div>
+                    <div className="absolute top-1 left-0 right-0 h-5 flex justify-between">
+                      <div className="w-4 h-5 bg-pink-400 rounded-b-sm"></div>
+                      <div className="w-4 h-5 bg-pink-400 rounded-b-sm"></div>
+                      <div className="w-4 h-5 bg-pink-400 rounded-b-sm"></div>
+                      <div className="w-4 h-5 bg-pink-400 rounded-b-sm"></div>
+>>>>>>> 7ea62d898d3e0e768f7cc3be729e3316ee0f912c
                     </div>
                   </div>
                 </div>
@@ -72,7 +88,11 @@ const CategorySlider = () => {
                 {/* Product listings */}
                 <div className="flex-1 bg-white py-2">
                   <div className="flex mb-3">
+<<<<<<< HEAD
                     <div className="w-1/4 bg-blue-400 h-12 rounded"></div>
+=======
+                    <div className="w-1/4 bg-pink-400 h-12 rounded"></div>
+>>>>>>> 7ea62d898d3e0e768f7cc3be729e3316ee0f912c
                     <div className="w-3/4 pl-2">
                       <div className="h-4 bg-purple-500 w-full mb-2 rounded"></div>
                       <div className="h-4 bg-purple-400 w-3/4 rounded"></div>
@@ -80,7 +100,11 @@ const CategorySlider = () => {
                   </div>
                   
                   <div className="flex mb-3">
+<<<<<<< HEAD
                     <div className="w-1/4 bg-blue-400 h-12 rounded"></div>
+=======
+                    <div className="w-1/4 bg-pink-400 h-12 rounded"></div>
+>>>>>>> 7ea62d898d3e0e768f7cc3be729e3316ee0f912c
                     <div className="w-3/4 pl-2">
                       <div className="h-4 bg-purple-500 w-full mb-2 rounded"></div>
                       <div className="h-4 bg-purple-400 w-3/4 rounded"></div>
@@ -88,7 +112,11 @@ const CategorySlider = () => {
                   </div>
                   
                   <div className="flex mb-3">
+<<<<<<< HEAD
                     <div className="w-1/4 bg-blue-400 h-12 rounded"></div>
+=======
+                    <div className="w-1/4 bg-pink-400 h-12 rounded"></div>
+>>>>>>> 7ea62d898d3e0e768f7cc3be729e3316ee0f912c
                     <div className="w-3/4 pl-2">
                       <div className="h-4 bg-purple-500 w-full mb-2 rounded"></div>
                       <div className="h-4 bg-purple-400 w-3/4 rounded"></div>
@@ -134,5 +162,9 @@ const CategorySlider = () => {
   );
 };
 
+<<<<<<< HEAD
 export default CategorySlider;
 
+=======
+export default CategorySlider;
+>>>>>>> 7ea62d898d3e0e768f7cc3be729e3316ee0f912c
