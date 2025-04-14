@@ -23,6 +23,9 @@ import SupplierRegister from "./components/seller/SupplierRegistration";
 import SupplierDashboard from "./components/seller/SupplierDashboard";
 import EditProduct from "./components/admin/EditProduct";
 import AdminAddProduct from "./components/admin/AdminAddProduct";
+import Footer from "./components/Footer";
+import MoreAbout from "./components/MoreAbout";
+
 
 
 function App() {
@@ -51,7 +54,11 @@ function App() {
         <Route path="/supplier-dashboard" element={<SupplierDashboard />} />
         <Route path="/admin/product/edit/:id" element={<EditProduct />} />
         <Route path="/admin/add" element={<AdminAddProduct />} />
+        <Route path="/" element={<MoreAbout />} />
       </Routes>
+      <Footer/>
+      <MoreAbout/>
+
     
       </ScrollToTop>
     </Router>

@@ -5,7 +5,6 @@ import cors from "cors";
 import cookieParser from 'cookie-parser';
 
 
-
 const app = express();
 
 import { ProductRouter } from "./Routes/productRoute.js";
@@ -14,8 +13,6 @@ import { OrderRouter } from "./Routes/orderRoute.js";
 import { PartnerRouter } from "./Routes/partnerRoute.js";
 import { AdminRouter } from "./Routes/adminRoute.js";
 import { SupplierRouter } from "./Routes/supplierRoute.js";
-
-
 
 app.use(express.json());
 app.use(cors({

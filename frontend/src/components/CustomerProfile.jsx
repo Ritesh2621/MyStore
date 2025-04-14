@@ -49,49 +49,92 @@ const CustomerProfile = () => {
     navigate("/");
   };
 
-
   // Show a loading message if the profile is still being fetched
   if (isLoading) {
-    return <div>Loading your profile...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-400"></div>
+      </div>
+    );
   }
 
   // If no user data is available, show an error message
   if (!user) {
     console.log("User state is still null or undefined");
-    return <div>No user data found. Please try again later.</div>;
+    return (
+      <div className="text-center p-8 text-gray-600">
+        No user data found. Please try again later.
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-6xl mx-auto mt-24 mb-16 p-6 bg-gradient-to-b from-indigo-100 via-white to-indigo-100 shadow-lg rounded-xl">
-      {/* Profile Header */}
-      <div className="flex flex-col md:flex-row items-center justify-between mb-12 space-y-6 md:space-y-0">
-        <div className="flex items-center space-x-6">
-          {user?.profilePicture ? (
-            <img
-              src={user.profilePicture}
-              alt="Profile"
-              className="w-24 h-24 rounded-full shadow-md"
-            />
-          ) : (
-            <div className="w-24 h-24 bg-blue-400 text-white text-2xl flex items-center justify-center rounded-full shadow-md">
-              {user?.name ? user.name.charAt(0).toUpperCase() : "?"}
-            </div>
-          )}
-          <div>
-            <h2 className="text-3xl font-bold text-indigo-700">{user?.name || "User"}</h2>
-            <p>{user?.email || "Email not available"}</p>
-            <p>{user?.phone || "Phone not available"}</p>
-          </div>
+    <div className="bg-gray-100 min-h-screen pb-8">
+      {/* Header Bar */}
+      <div className="bg-white shadow-sm py-3 mb-4">
+        <div className="max-w-4xl mx-auto px-4 flex justify-between items-center">
+          <h1 className="text-lg font-medium text-gray-800">My Account</h1>
+          <button
+            onClick={handleLogout}
+            className="px-4 py-1.5 bg-red-500 text-white rounded text-sm font-medium hover:bg-red-600"
+          >
+            Logout
+          </button>
         </div>
-
-        <button
-          onClick={handleLogout}
-          className="px-6 py-2 bg-red-500 text-white rounded-full hover:bg-red-600 shadow-md"
-        >
-          Logout
-        </button>
       </div>
-      <OrderHistory/>
+
+      <div className="max-w-4xl mx-auto px-4">
+        {/* User Profile Card - Similar to Order Card in Image */}
+        <div className="bg-white rounded shadow-sm mb-4">
+          <div className="border-b p-4">
+            <div className="flex justify-between items-center">
+              <div className="text-sm text-gray-500">{new Date().toDateString()}</div>
+              <div className="text-sm">
+                Profile ID: {user._id?.substring(0, 10) || "User123456789"}
+              </div>
+            </div>
+          </div>
+          
+          <div className="border-b p-4">
+            <div className="flex justify-between">
+              <div>
+                <p className="font-medium">Name: {user?.name || "User"}</p>
+                <p className="text-sm text-gray-600">Email: {user?.email || "Not available"}</p>
+                {user?.phone && <p className="text-sm text-gray-600">Phone: {user.phone}</p>}
+              </div>
+              <div className="flex items-center">
+                {user?.profilePicture ? (
+                  <img
+                    src={user.profilePicture}
+                    alt="Profile"
+                    className="w-12 h-12 rounded-full"
+                  />
+                ) : (
+                  <div className="w-12 h-12 bg-gray-200 text-gray-600 text-xl flex items-center justify-center rounded-full">
+                    {user?.name ? user.name.charAt(0).toUpperCase() : "?"}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          {/* <div className="p-4">
+            <div className="flex justify-between items-center">
+              <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50">
+                Edit Profile
+              </button>
+              <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded text-sm hover:bg-gray-50">
+                Change Password
+              </button>
+            </div>
+          </div> */}
+        </div>
+        
+      
+        
+        {/* Order History Component */}
+        <OrderHistory />
+      </div>
     </div>
   );
 };
