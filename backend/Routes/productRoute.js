@@ -1,8 +1,12 @@
 import express from "express";
+import multer from "multer";
+import path from "path";
 import { ProductModel } from "../Model/productModel.js";
 import { UserModel } from "../Model/userModel.js";
+import upload from "../Middleware/uploads.js";
 
 const router = express.Router();
+
 
 
 router.get('/', async (req, res) => {
@@ -27,9 +31,11 @@ router.get("/:id",async(req,res)=>{
 
 
 
+
+
 router.post('/product', async (req, res) => {
   try {
-      const { title, description, category, subcategory, subsubcategory, price, discountPercentage, rating, brand, images, sellername, quantity, warrantyInformation, shippingInformation, sellerId } = req.body;
+      const { title, description, category, subcategory, subsubcategory, price, discountPercentage, rating, brand, images, sellername, quantity, warrantyInformation, shippingInformation, sellerId, availability ,trusted } = req.body;
 
       // Check if sellerId is present (You can extract sellerId from the authenticated user's session or token)
       if (!sellerId) {
@@ -52,8 +58,10 @@ router.post('/product', async (req, res) => {
           quantity,
           warrantyInformation,
           shippingInformation,
-          sellerId  // Ensure the sellerId is saved with the product
-      });
+          sellerId , // Ensure the sellerId is saved with the product
+           availability ,
+           trusted
+              });
 
       // Save the instance to the database
       await newProduct.save();
@@ -69,6 +77,34 @@ router.post('/product', async (req, res) => {
           message: 'Internal server error',
           error: error.message
       });
+  }
+});
+
+router.patch('/product/:id', upload.array('images', 10), async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const imageUrls = req.files.map(file => {
+      return `/uploads/${file.filename}`;
+    });
+
+    const updatedProduct = await ProductModel.findByIdAndUpdate(
+      id,
+      { $push: { images: { $each: imageUrls } } },
+      { new: true }
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    res.status(200).json({
+      message: 'Images uploaded and saved successfully',
+      data: updatedProduct
+    });
+  } catch (error) {
+    console.error('Image upload error:', error);
+    res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 });
 

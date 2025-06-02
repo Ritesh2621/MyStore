@@ -207,6 +207,9 @@ router.put('/edit/:id', async (req, res) => {
       quantity,
       warrantyInformation,
       shippingInformation,
+      availability,
+       trusted,
+
     } = req.body;
 
     // Find the product by ID and update the necessary fields
@@ -227,6 +230,8 @@ router.put('/edit/:id', async (req, res) => {
         quantity,
         warrantyInformation,
         shippingInformation,
+        availability,
+       trusted,
       },
       { new: true } // `new: true` ensures the response contains the updated document
     );
@@ -287,5 +292,94 @@ router.get("/reports",  async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 });
+
+
+// Manage Product Availability and Trusted Status
+// PUT - Update both fields
+router.put("/product/status/:id", async (req, res) => {
+    try {
+        const { availability, trusted } = req.body;
+
+        if (availability === undefined || trusted === undefined) {
+            return res.status(400).json({ message: "Both 'availability' and 'trusted' fields are required." });
+        }
+
+        const updatedProduct = await ProductModel.findByIdAndUpdate(
+            req.params.id,
+            { availability, trusted },
+            { new: true }
+        );
+
+        if (!updatedProduct) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        res.status(200).json({ message: "Product status updated", product: updatedProduct });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
+// PATCH - Partial update
+router.patch("/product/status/:id", async (req, res) => {
+    try {
+        const updates = {};
+        if ("availability" in req.body) updates.availability = req.body.availability;
+        if ("trusted" in req.body) updates.trusted = req.body.trusted;
+
+        if (Object.keys(updates).length === 0) {
+            return res.status(400).json({ message: "At least one of 'availability' or 'trusted' must be provided." });
+        }
+
+        const updatedProduct = await ProductModel.findByIdAndUpdate(
+            req.params.id,
+            updates,
+            { new: true }
+        );
+
+        if (!updatedProduct) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        res.status(200).json({ message: "Product status patched", product: updatedProduct });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
+// GET - Get current status
+router.get("/product/status/:id", async (req, res) => {
+    try {
+        const product = await ProductModel.findById(req.params.id).select("availability trusted title");
+
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        res.status(200).json({ message: "Product status fetched", product });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
+// DELETE - Reset status to default (false)
+router.delete("/product/status/:id", async (req, res) => {
+    try {
+        const updatedProduct = await ProductModel.findByIdAndUpdate(
+            req.params.id,
+            { availability: false, trusted: false },
+            { new: true }
+        );
+
+        if (!updatedProduct) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+
+        res.status(200).json({ message: "Product status reset", product: updatedProduct });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
 
 export { router as AdminRouter };

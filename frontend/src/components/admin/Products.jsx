@@ -427,3 +427,7 @@ const Products = () => {
 };
 
 export default Products;
+
+//  mobile view 
+
+

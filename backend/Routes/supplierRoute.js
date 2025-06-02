@@ -10,6 +10,8 @@ dotenv.config();
 const router = express.Router();
 
 // ✅ Supplier Registration
+
+// ✅ Supplier Registration
 router.post("/register", async (req, res) => {
   try {
     console.log("Registration request received", req.body);
@@ -31,7 +33,7 @@ router.post("/register", async (req, res) => {
       productCategory,
     } = req.body;
 
-    // Ensure all required fields are provided
+    // Validate required fields
     if (
       !userId ||
       !address ||
@@ -45,25 +47,25 @@ router.post("/register", async (req, res) => {
       !contactNumber ||
       !productCategory
     ) {
-      console.error("Validation failed: Missing fields");
-      return res.status(400).json({ message: "All fields are required" });
+      console.error("Validation failed: Missing required fields");
+      return res.status(400).json({ message: "All required fields must be provided" });
     }
 
     // Check if user exists
     const user = await UserModel.findById(userId);
     if (!user) {
-      console.error("User not found with ID:", userId);
+      console.error("User not found:", userId);
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Check if already a supplier
+    // Prevent duplicate supplier registration
     const existingSupplier = await SupplierModel.findOne({ userId });
     if (existingSupplier) {
       console.error("User is already a supplier");
-      return res.status(400).json({ message: "Already a supplier" });
+      return res.status(400).json({ message: "User is already registered as a supplier" });
     }
 
-    // Create new supplier
+    // Create new supplier entry
     const newSupplier = new SupplierModel({
       userId,
       uinNumber,
@@ -82,17 +84,24 @@ router.post("/register", async (req, res) => {
     });
 
     await newSupplier.save();
-    console.log("New supplier created successfully:", newSupplier);
+    console.log("Supplier account created:", newSupplier);
 
-    // Update user role to 'seller'
+    // Update user role to seller
     user.role = "seller";
     await user.save();
-    console.log("User role updated to seller");
 
-    res.status(201).json({ message: "Supplier account created successfully, role updated to seller" });
+    res.status(201).json({
+      message: "Supplier account created successfully and user role updated to seller",
+    });
   } catch (error) {
-    console.error("Error occurred during registration:", error);
-    res.status(500).json({ error: error.message });
+    console.error("Error during registration:", error);
+
+    // Duplicate key error (e.g., from leftover indexes)
+    if (error.code === 11000) {
+      return res.status(400).json({ message: "Duplicate entry", error });
+    }
+
+    res.status(500).json({ message: "Internal Server Error", error: error.message });
   }
 });
 

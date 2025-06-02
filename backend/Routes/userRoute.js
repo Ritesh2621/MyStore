@@ -56,12 +56,23 @@ router.post("/login", async (req, res) => {
 
     otpStore.set(email, { otp, expires: Date.now() + 10 * 60 * 1000 });
 
-    const mailOptions = {
-      from: "your-email@gmail.com",
-      to: email,
-      subject: "Your OTP Code",
-      text: `Your OTP code is ${otp}. It is valid for the next 10 minutes.`,
-    };
+ const mailOptions = {
+  from: "your-email@gmail.com",
+  to: email,
+  subject: "🔐 Login Verification Code",
+  text: `Hi there,
+
+You’ve requested to log in to your account. Please use the following One-Time Password (OTP) to verify your identity:
+
+👉 OTP Code: ${otp}
+
+This code is valid for the next 10 minutes. For your security, do not share this code with anyone.
+
+If you did not request this, please ignore this email or contact support immediately.
+
+Thank you,
+The MyStore Team`,
+};
 
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {

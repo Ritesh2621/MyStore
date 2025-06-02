@@ -588,3 +588,6 @@ const Users = () => {
 };
 
 export default Users;
+
+
+// mobile view 

@@ -422,3 +422,246 @@ const AdminAddProduct = () => {
 };
 
 export default AdminAddProduct;
+
+// mobile view 
+
+// import React, { useState } from 'react';
+// import axios from 'axios';
+// import { useNavigate } from 'react-router-dom';
+// import { Plus, Trash2, ImageIcon } from 'lucide-react';
+
+// const AdminAddProduct = () => {
+//     const navigate = useNavigate();
+//     const [productData, setProductData] = useState({
+//         title: '',
+//         description: '',
+//         category: '',
+//         subcategory: '',
+//         subsubcategory: '',
+//         price: '',
+//         discountPercentage: '',
+//         rating: 0,
+//         brand: '',
+//         images: [],
+//         sellername: '',
+//         quantity: '',
+//         warrantyInformation: '',
+//         shippingInformation: '',
+//         sellerId: '' 
+//     });
+
+//     const [imageUrl, setImageUrl] = useState('');
+//     const [errors, setErrors] = useState({});
+//     const [isSubmitting, setIsSubmitting] = useState(false);
+
+//     const categoryStructure = {
+//         'Clothes': {
+//             'Men': ['Shirts', 'Jeans', 'Jackets', 'T-shirts', 'Sweaters'],
+//             'Women': ['Dresses', 'Tops', 'Skirts', 'Jeans', 'Blouses'],
+//             'Unisex': ['Headphones', 'Chargers', 'Cables', 'T-shirts', 'Hats'],
+//             'Kids': ['T-shirts', 'Pants', 'Jackets', 'Shoes', 'Hats']
+//         },
+//         'Jewellery': {
+//             'Necklace': ['Gold Necklace', 'Silver Necklace', 'Pearl Necklace'],
+//             'Earrings': ['Gold Earrings', 'Diamond Earrings', 'Stud Earrings'],
+//             'Braclets': ['Leather Bracelets', 'Silver Bracelets', 'Gold Bracelets'],
+//             'Watches': ['Analog Watches', 'Digital Watches', 'Smart Watches']
+//         },
+//         'Home Furnishing': {
+//             'BedSheets and Pillow': ['Cotton Sheets', 'Silk Sheets', 'Pillow Covers'],
+//             'Furniture': ['Sofas', 'Beds', 'Dining Tables', 'Chairs', 'Bookshelves'],
+//             'Decor': ['Lighting', 'Rugs', 'Wall Art', 'Curtains', 'Candles']
+//         }
+//     };
+
+//     const handleChange = (e) => {
+//         const { name, value } = e.target;
+//         setProductData(prev => ({ ...prev, [name]: value }));
+//     };
+
+//     const handleAddImageUrl = () => {
+//         if (imageUrl.trim()) {
+//             const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/;
+//             if (urlPattern.test(imageUrl)) {
+//                 setProductData(prev => ({
+//                     ...prev,
+//                     images: [...prev.images, imageUrl.trim()]
+//                 }));
+//                 setImageUrl('');
+//             } else {
+//                 alert('Please enter a valid image URL');
+//             }
+//         }
+//     };
+
+//     const removeImage = (indexToRemove) => {
+//         setProductData(prev => ({
+//             ...prev,
+//             images: prev.images.filter((_, index) => index !== indexToRemove)
+//         }));
+//     };
+
+//     const validateForm = () => {
+//         const newErrors = {};
+//         if (!productData.title) newErrors.title = 'Product title is required';
+//         if (!productData.category) newErrors.category = 'Category is required';
+//         if (!productData.price) newErrors.price = 'Price is required';
+//         if (!productData.quantity) newErrors.quantity = 'Quantity is required';
+//         if (productData.discountPercentage && 
+//             (isNaN(productData.discountPercentage) || 
+//              productData.discountPercentage < 0 || 
+//              productData.discountPercentage > 100)) {
+//             newErrors.discountPercentage = 'Invalid discount percentage';
+//         }
+//         setErrors(newErrors);
+//         return Object.keys(newErrors).length === 0;
+//     };
+
+//     const handleSubmit = async (e) => {
+//         e.preventDefault();
+//         if (!validateForm()) return;
+//         setIsSubmitting(true);
+//         try {
+//             const submissionData = {
+//                 ...productData,
+//                 price: parseFloat(productData.price),
+//                 discountPercentage: parseFloat(productData.discountPercentage) || 0,
+//                 quantity: parseInt(productData.quantity),
+//                 sellerId: 'current-seller-id',
+//                 sellername: 'Current Seller'
+//             };
+//             await axios.post('http://localhost:4000/product/product', submissionData);
+//             alert('Product added successfully!');
+//             navigate('/admin/products');
+//         } catch (error) {
+//             console.error('Product submission error:', error);
+//             alert('Failed to add product. Please try again.');
+//         } finally {
+//             setIsSubmitting(false);
+//         }
+//     };
+
+//     return (
+//         <div className="bg-gray-50 min-h-screen py-10 px-4 sm:px-6 lg:px-8 overflow-x-hidden">
+//             <div className="max-w-5xl mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden">
+//                 <div className="px-4 sm:px-6 lg:px-10 py-8">
+//                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+//                         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Add New Product</h1>
+//                         <div className="text-sm text-gray-500">Fields marked with * are required</div>
+//                     </div>
+
+//                     <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+//                         <div className="grid sm:grid-cols-2 gap-6">
+//                             <div>
+//                                 <label className="block text-sm font-medium text-gray-700 mb-2">Product Title *</label>
+//                                 <input
+//                                     type="text"
+//                                     name="title"
+//                                     value={productData.title}
+//                                     onChange={handleChange}
+//                                     className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 transition-all duration-300 ${
+//                                         errors.title ? 'border-red-500' : 'border-gray-300'
+//                                     }`}
+//                                     placeholder="Enter product name"
+//                                 />
+//                                 {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
+//                             </div>
+
+//                             <div>
+//                                 <label className="block text-sm font-medium text-gray-700 mb-2">Brand</label>
+//                                 <input
+//                                     type="text"
+//                                     name="brand"
+//                                     value={productData.brand}
+//                                     onChange={handleChange}
+//                                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+//                                     placeholder="Enter brand name"
+//                                 />
+//                             </div>
+//                         </div>
+
+//                         <div>
+//                             <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+//                             <textarea
+//                                 name="description"
+//                                 value={productData.description}
+//                                 onChange={handleChange}
+//                                 className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 transition-all duration-300"
+//                                 rows="4"
+//                                 placeholder="Enter product description"
+//                             />
+//                         </div>
+
+//                         <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+//                             <div>
+//                                 <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+//                                 <select
+//                                     name="category"
+//                                     value={productData.category}
+//                                     onChange={handleChange}
+//                                     className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 transition-all duration-300 ${
+//                                         errors.category ? 'border-red-500' : 'border-gray-300'
+//                                     }`}
+//                                 >
+//                                     <option value="">Select Category</option>
+//                                     {Object.keys(categoryStructure).map(category => (
+//                                         <option key={category} value={category}>{category}</option>
+//                                     ))}
+//                                 </select>
+//                                 {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category}</p>}
+//                             </div>
+
+//                             <div>
+//                                 <label className="block text-sm font-medium text-gray-700 mb-2">Subcategory</label>
+//                                 <select
+//                                     name="subcategory"
+//                                     value={productData.subcategory}
+//                                     onChange={handleChange}
+//                                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+//                                     disabled={!productData.category}
+//                                 >
+//                                     <option value="">Select Subcategory</option>
+//                                     {productData.category && Object.keys(categoryStructure[productData.category] || {}).map(sub => (
+//                                         <option key={sub} value={sub}>{sub}</option>
+//                                     ))}
+//                                 </select>
+//                             </div>
+
+//                             <div>
+//                                 <label className="block text-sm font-medium text-gray-700 mb-2">Sub-Subcategory</label>
+//                                 <select
+//                                     name="subsubcategory"
+//                                     value={productData.subsubcategory}
+//                                     onChange={handleChange}
+//                                     className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+//                                     disabled={!productData.subcategory}
+//                                 >
+//                                     <option value="">Select Sub-Subcategory</option>
+//                                     {productData.category && productData.subcategory &&
+//                                         categoryStructure[productData.category][productData.subcategory]?.map(subsub => (
+//                                             <option key={subsub} value={subsub}>{subsub}</option>
+//                                         ))
+//                                     }
+//                                 </select>
+//                             </div>
+//                         </div>
+
+//                         {/* You can continue styling the rest of the fields (price, discount, quantity, images, etc.) with the same responsive class approach */}
+
+//                         <div className="text-center pt-6">
+//                             <button
+//                                 type="submit"
+//                                 className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-lg transition-all"
+//                                 disabled={isSubmitting}
+//                             >
+//                                 {isSubmitting ? 'Submitting...' : 'Add Product'}
+//                             </button>
+//                         </div>
+//                     </form>
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// };
+
+// export default AdminAddProduct;

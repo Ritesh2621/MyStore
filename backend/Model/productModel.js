@@ -53,7 +53,7 @@ const productSchema = new mongoose.Schema({
   sellerId: {
     type: mongoose.Schema.Types.ObjectId,  // Link to the user who is selling this product
     ref: 'User',  // Assuming you have a 'User' model to associate with
-    required: true,
+    // required: true,
   },
   quantity: {
     type: String,
@@ -66,6 +66,17 @@ const productSchema = new mongoose.Schema({
   shippingInformation: {
     type: String,
     required: true,
+  },
+    // ✅ Newly added fields
+  availability: {
+    type: String,
+    enum: ['Coming Soon', 'Available', 'Out of Stock'],
+    default: 'Unavailable',
+  },
+  trusted: {
+    type: String,
+    enum: ['Yes', 'No'],
+    default: 'No',
   },
 });
 
